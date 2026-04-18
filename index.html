@@ -1,607 +1,1883 @@
 <!DOCTYPE html>
-
-<html>
-  <head>
-	
-	<title>Victor Cardoz</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-	<!-- STYLESHEETS -->
-
-	<link rel="stylesheet" href="style/bootstrap.min.css" type="text/css" media="all">
-	<link rel="stylesheet" href="style/all.min.css" type="text/css" media="all">
-
-	<link rel="stylesheet" href="style/slick.css" type="text/css" media="all">
-
-	<link rel="stylesheet" href="style/animate.css" type="text/css" media="all">
-
-	<link rel="stylesheet" href="style/style.css" type="text/css" media="all">
-
-
-<style type="text/css">
-============================================================================================ */
-
-@font-face {
-  font-weight: 400;
-  font-style:  normal;
-  font-family: 'Inter-Loom';
-
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Regular.woff2') format('woff2');
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V1DHAAN // Personal OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#0f0f1a;--bg3:#13131f;
+  --cyan:#00f0ff;--pink:#ff2bd6;--purple:#7a5cff;--green:#00ff8c;
+  --text:#eaeaea;--muted:#7a7a9a;
+  --border:rgba(0,240,255,0.12);
+  --gc:0 0 20px rgba(0,240,255,0.45);
+  --gp:0 0 20px rgba(255,43,214,0.45);
+  --gv:0 0 20px rgba(122,92,255,0.45);
 }
-@font-face {
-  font-weight: 400;
-  font-style:  italic;
-  font-family: 'Inter-Loom';
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;cursor:none}
+@media (hover:none), (pointer:coarse){body{cursor:auto}#cur,#cur-ring{display:none!important}}
 
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Italic.woff2') format('woff2');
+/* CURSOR */
+#cur{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan),0 0 20px rgba(0,240,255,.3)}
+#cur-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(0,240,255,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s}
+
+/* PROGRESS */
+#prog{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink));z-index:1001;width:0;box-shadow:0 0 8px var(--cyan)}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:100;padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,15,.75);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.1rem;color:var(--cyan);letter-spacing:.2em;text-decoration:none;text-shadow:var(--gc)}
+nav ul{display:flex;gap:2.5rem;list-style:none}
+nav ul a{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.85rem;color:var(--muted);text-decoration:none;letter-spacing:.15em;text-transform:uppercase;transition:color .3s;position:relative}
+nav ul a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--cyan);transition:width .3s;box-shadow:var(--gc)}
+nav ul a:hover{color:var(--cyan)}
+nav ul a:hover::after{width:100%}
+
+/* HERO */
+#hero{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.04) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 18s linear infinite}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:0 60px}}
+.hero-glow{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to top,rgba(122,92,255,.1),transparent);pointer-events:none}
+.scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:1}
+.hero-content{position:relative;z-index:2;padding:0 1.5rem}
+
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--cyan);letter-spacing:.25em;text-transform:uppercase;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s ease .3s forwards}
+.hero-name{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(3.5rem,9vw,7.5rem);line-height:1;letter-spacing:.06em;color:var(--text);opacity:0;animation:fadeUp .8s ease .5s forwards;margin-bottom:.4rem}
+
+/* GLITCH — single span, data-text matches inner text exactly */
+.glitch{position:relative;display:inline-block;color:var(--cyan);text-shadow:0 0 30px rgba(0,240,255,.55),0 0 70px rgba(0,240,255,.2)}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;color:var(--cyan)}
+.glitch::before{color:var(--pink);clip-path:polygon(0 0,100% 0,100% 35%,0 35%);left:-3px;text-shadow:none;animation:gTop 4s infinite}
+.glitch::after{color:var(--purple);clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%);left:3px;text-shadow:none;animation:gBot 4s infinite}
+@keyframes gTop{0%,88%,100%{transform:none;opacity:0}89%{transform:translateX(-4px);opacity:.85}91%{transform:translateX(4px);opacity:.85}93%{transform:translateX(-2px);opacity:.85}95%{transform:none;opacity:0}}
+@keyframes gBot{0%,86%,100%{transform:none;opacity:0}87%{transform:translateX(4px);opacity:.7}89%{transform:translateX(-4px);opacity:.7}91%{transform:translateX(2px);opacity:.7}93%{transform:none;opacity:0}}
+
+.hero-sub{font-family:'Rajdhani',sans-serif;font-weight:300;font-size:clamp(.95rem,2.5vw,1.45rem);color:var(--muted);letter-spacing:.3em;text-transform:uppercase;margin-bottom:2rem;opacity:0;animation:fadeUp .8s ease .7s forwards}
+.typing{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--cyan);margin-bottom:3rem;opacity:0;animation:fadeUp .8s ease .9s forwards;min-height:1.4em}
+.blink{animation:blink .8s step-end infinite;color:var(--pink)}
+@keyframes blink{50%{opacity:0}}
+.hero-cta{display:flex;gap:1.5rem;justify-content:center;opacity:0;animation:fadeUp .8s ease 1.1s forwards}
+
+/* BUTTONS */
+.btn{font-family:'Orbitron',monospace;font-weight:700;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;padding:.9rem 2.2rem;text-decoration:none;transition:all .3s;display:inline-block}
+.btn-c{background:transparent;color:var(--cyan);border:1px solid var(--cyan)}
+.btn-c:hover{background:var(--cyan);color:var(--bg);box-shadow:var(--gc),0 0 40px rgba(0,240,255,.3);transform:translateY(-2px)}
+.btn-p{background:transparent;color:var(--pink);border:1px solid var(--pink)}
+.btn-p:hover{background:var(--pink);color:var(--bg);box-shadow:var(--gp);transform:translateY(-2px)}
+
+/* DIVIDER */
+.ndiv{height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent);opacity:.35}
+
+/* SECTIONS */
+section{padding:7rem 3rem;max-width:1200px;margin:0 auto}
+.sec-hd{display:flex;align-items:center;gap:1.5rem;margin-bottom:4rem}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--pink);letter-spacing:.2em}
+.sec-title{font-family:'Orbitron',monospace;font-weight:700;font-size:clamp(1.4rem,3vw,2rem);color:var(--text);letter-spacing:.1em}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.bio{font-size:1rem;color:var(--muted);line-height:1.9}
+.bio p{margin-bottom:1.1rem}
+.bio strong{color:var(--cyan);font-weight:600}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:2rem}
+.stat-box{border:1px solid var(--border);padding:1.1rem;background:var(--bg2);position:relative;overflow:hidden}
+.stat-box::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.stat-n{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:var(--cyan);text-shadow:var(--gc)}
+.stat-l{font-size:.72rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:.2rem}
+.sk-group{margin-bottom:1.8rem}
+.sk-lbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--pink);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.9rem}
+.sk-wrap{display:flex;flex-wrap:wrap;gap:.5rem}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.35rem .9rem;border:1px solid;letter-spacing:.08em;transition:all .25s;cursor:default;display:inline-flex;align-items:center;white-space:nowrap;word-break:keep-all;overflow-wrap:normal;flex:0 0 auto}
+.tag-c{border-color:rgba(0,240,255,.25);color:var(--cyan)}
+.tag-c:hover{background:rgba(0,240,255,.08);box-shadow:var(--gc);transform:translateY(-1px)}
+.tag-p{border-color:rgba(255,43,214,.25);color:var(--pink)}
+.tag-p:hover{background:rgba(255,43,214,.08);box-shadow:var(--gp);transform:translateY(-1px)}
+.tag-v{border-color:rgba(122,92,255,.25);color:var(--purple)}
+.tag-v:hover{background:rgba(122,92,255,.08);box-shadow:var(--gv);transform:translateY(-1px)}
+
+/* PROJECTS */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.4rem}
+.proj-card{border:1px solid var(--border);background:var(--bg2);padding:1.8rem;position:relative;overflow:hidden;cursor:pointer;transition:all .3s}
+.proj-card::before{content:'';position:absolute;top:0;left:0;width:0;height:1px;background:linear-gradient(90deg,var(--cyan),var(--pink));transition:width .4s}
+.proj-card:hover{transform:translateY(-4px);border-color:rgba(0,240,255,.28);box-shadow:0 8px 32px rgba(0,240,255,.08)}
+.proj-card:hover::before{width:100%}
+.proj-id{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.2em;margin-bottom:.7rem}
+.proj-title{font-family:'Orbitron',monospace;font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:.75rem;letter-spacing:.05em;transition:color .3s}
+.proj-card:hover .proj-title{color:var(--cyan)}
+.proj-desc{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:1.4rem}
+.proj-stack{display:flex;flex-wrap:wrap;gap:.35rem}
+.stk{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--purple);border:1px solid rgba(122,92,255,.22);padding:.18rem .55rem;letter-spacing:.06em}
+.proj-arrow{position:absolute;bottom:1.4rem;right:1.4rem;font-size:1.1rem;color:var(--muted);transition:all .3s}
+.proj-card:hover .proj-arrow{color:var(--cyan);transform:translate(2px,-2px);text-shadow:var(--gc)}
+
+/* MODAL */
+.modal-wrap{position:fixed;inset:0;background:rgba(10,10,15,.92);backdrop-filter:blur(10px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-wrap.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--bg2);border:1px solid rgba(0,240,255,.22);max-width:600px;width:92%;padding:2.5rem;position:relative;transform:translateY(20px);transition:transform .3s;box-shadow:0 0 60px rgba(0,240,255,.08)}
+.modal-wrap.open .modal-box{transform:translateY(0)}
+.modal-x{position:absolute;top:1.2rem;right:1.2rem;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;transition:color .2s;font-family:'JetBrains Mono',monospace}
+.modal-x:hover{color:var(--pink)}
+.corner{position:absolute;width:14px;height:14px;border-color:rgba(0,240,255,.5);border-style:solid}
+.c-tl{top:0;left:0;border-width:1px 0 0 1px}
+.c-tr{top:0;right:0;border-width:1px 1px 0 0}
+.c-bl{bottom:0;left:0;border-width:0 0 1px 1px}
+.c-br{bottom:0;right:0;border-width:0 1px 1px 0}
+.m-tag{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--pink);letter-spacing:.2em;margin-bottom:.7rem}
+.m-title{font-family:'Orbitron',monospace;font-weight:700;font-size:1.3rem;color:var(--cyan);margin-bottom:1.1rem;text-shadow:var(--gc)}
+.m-desc{color:var(--muted);line-height:1.8;margin-bottom:1.4rem;font-size:.95rem}
+.m-div{height:1px;background:var(--border);margin-bottom:1.2rem}
+.m-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.6rem}
+.m-link{display:inline-flex;align-items:center;gap:.5rem;font-family:'Orbitron',monospace;font-size:.62rem;color:var(--cyan);border:1px solid rgba(0,240,255,.3);padding:.55rem 1.1rem;text-decoration:none;letter-spacing:.1em;transition:all .2s;margin-top:1.2rem}
+.m-link:hover{background:var(--cyan);color:var(--bg);box-shadow:var(--gc)}
+
+/* HOBBIES */
+.hob-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.2rem}
+.hob{border:1px solid var(--border);background:var(--bg2);padding:1.8rem;position:relative;overflow:hidden;transition:all .3s}
+.hob::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent);opacity:0;transition:opacity .3s}
+.hob:hover{border-color:rgba(122,92,255,.3);transform:translateY(-3px)}
+.hob:hover::after{opacity:1}
+.hob-icon{font-size:1.8rem;display:block;margin-bottom:.9rem}
+.hob-status{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--green);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem}
+.hob-status::before{content:'● ';animation:pulse 2.2s infinite}
+@keyframes pulse{50%{opacity:.2}}
+.hob-title{font-family:'Orbitron',monospace;font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:.5rem;letter-spacing:.08em}
+.hob-desc{font-size:.83rem;color:var(--muted);line-height:1.6}
+.hob-bar{margin-top:1rem;height:2px;background:rgba(255,255,255,.05)}
+.hob-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));box-shadow:0 0 6px rgba(122,92,255,.5);width:0%;transition:width 1.4s ease}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:5rem;align-items:start}
+.c-info h3{font-family:'Orbitron',monospace;font-weight:700;font-size:1.05rem;color:var(--text);margin-bottom:.9rem}
+.c-info p{color:var(--muted);font-size:.92rem;line-height:1.8;margin-bottom:1.8rem}
+.c-link{display:flex;align-items:center;gap:.8rem;color:var(--muted);text-decoration:none;font-size:.82rem;margin-bottom:.75rem;font-family:'JetBrains Mono',monospace;transition:color .2s}
+.c-link:hover{color:var(--cyan)}
+.c-dot{width:4px;height:4px;background:var(--cyan);border-radius:50%;box-shadow:var(--gc);flex-shrink:0}
+.c-form{display:flex;flex-direction:column;gap:1.1rem}
+.f-lbl{display:block;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.45rem}
+.f-in,.f-ta{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1rem;padding:.85rem 1.1rem;outline:none;transition:all .3s;resize:none}
+.f-ta{min-height:115px}
+.f-in:focus,.f-ta:focus{border-color:rgba(0,240,255,.45);box-shadow:0 0 0 1px rgba(0,240,255,.12),inset 0 0 14px rgba(0,240,255,.03);background:rgba(0,240,255,.02)}
+.f-in::placeholder,.f-ta::placeholder{color:rgba(122,122,154,.45)}
+.sub-btn{font-family:'Orbitron',monospace;font-weight:700;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;padding:.95rem 1.5rem;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;transition:all .3s;width:100%;margin-top:.3rem}
+.sub-btn:hover{background:var(--cyan);color:var(--bg);box-shadow:var(--gc),0 0 30px rgba(0,240,255,.15)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2.5rem 3rem;text-align:center}
+.f-logo{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;color:var(--cyan);text-shadow:var(--gc);letter-spacing:.3em;display:block;margin-bottom:.7rem}
+.f-text{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.12em}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+/* PROJ SUBHEAD */
+.proj-subhead{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--green);letter-spacing:.25em;text-transform:uppercase;margin-bottom:1.8rem;opacity:.8}
+.proj-subhead::before{content:'● ';animation:pulse 2.2s infinite}
+
+/* PROJ LINKS ROW */
+.proj-links{display:flex;gap:.7rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+.proj-btn{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;padding:.35rem .9rem;text-decoration:none;transition:all .25s;display:inline-flex;align-items:center;gap:.4rem}
+.proj-btn-gh{color:var(--cyan);border:1px solid rgba(0,240,255,.3)}
+.proj-btn-gh:hover{background:var(--cyan);color:var(--bg);box-shadow:var(--gc)}
+.proj-btn-demo{color:var(--purple);border:1px solid rgba(122,92,255,.3)}
+.proj-btn-demo:hover{background:var(--purple);color:var(--bg);box-shadow:var(--gv)}
+
+/* CONCEPT LAB */
+.sec-subtext{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.12em;margin-bottom:3rem;padding-left:.1rem;border-left:2px solid rgba(122,92,255,.35);padding-left:1rem}
+.lab-list{display:flex;flex-direction:column;gap:1px}
+.lab-item{display:grid;grid-template-columns:280px 1fr;gap:0;border:1px solid rgba(122,92,255,.1);background:rgba(15,15,26,.6);transition:all .3s;position:relative;overflow:hidden}
+.lab-item::before{content:'';position:absolute;left:0;top:0;width:1px;height:0;background:linear-gradient(to bottom,var(--purple),transparent);transition:height .5s}
+.lab-item:hover{border-color:rgba(122,92,255,.22);background:rgba(15,15,26,.9)}
+.lab-item:hover::before{height:100%}
+.lab-left{border-right:1px solid rgba(122,92,255,.1);padding:1.5rem 1.6rem;display:flex;flex-direction:column;gap:1.1rem;background:rgba(10,10,20,.5)}
+.lab-img{width:100%;aspect-ratio:4/3;background:rgba(10,8,22,.6);border:1px solid rgba(122,92,255,.14);overflow:hidden;position:relative}
+.lab-img::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(122,92,255,.02) 10px,rgba(122,92,255,.02) 11px);pointer-events:none;z-index:0}
+.lab-img svg{position:relative;z-index:1;display:block}
+.lab-status-badge{display:inline-flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:rgba(122,92,255,.7);letter-spacing:.2em;border:1px solid rgba(122,92,255,.2);padding:.3rem .7rem;width:fit-content;background:rgba(122,92,255,.04)}
+.lab-status-badge::before{content:'';width:4px;height:4px;background:var(--purple);border-radius:50%;box-shadow:0 0 6px var(--purple)}
+.lab-right{padding:2rem 2.2rem}
+.lab-id{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:rgba(122,92,255,.45);letter-spacing:.2em;margin-bottom:.6rem}
+.lab-title{font-family:'Orbitron',monospace;font-weight:700;font-size:.9rem;color:rgba(234,234,234,.75);margin-bottom:.4rem;letter-spacing:.06em}
+.lab-tagline{font-size:.82rem;color:rgba(122,122,154,.6);margin-bottom:1.4rem;font-style:italic}
+.lab-fields{display:flex;flex-direction:column;gap:.8rem}
+.lab-field{}
+.lab-field-key{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:rgba(122,92,255,.6);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.25rem}
+.lab-field-val{font-size:.85rem;color:rgba(122,122,154,.8);line-height:1.65}
+
+
+/* CONCEPT LAB ENHANCEMENTS */
+.lab-keychips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.1rem}
+.lab-chip{font-family:'JetBrains Mono',monospace;font-size:.62rem;padding:.28rem .62rem;border:1px solid rgba(122,92,255,.18);color:rgba(234,234,234,.74);background:rgba(122,92,255,.05);letter-spacing:.06em}
+.lab-img{cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s}
+.lab-img:hover{transform:translateY(-2px);border-color:rgba(122,92,255,.28);box-shadow:0 10px 30px rgba(122,92,255,.08)}
+.note-modal-wrap{position:fixed;inset:0;background:rgba(6,8,16,.92);backdrop-filter:blur(10px);z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .28s}
+.note-modal-wrap.open{opacity:1;pointer-events:auto}
+.note-modal-box{width:min(1000px,94vw);height:min(84vh,820px);background:var(--bg2);border:1px solid rgba(122,92,255,.24);box-shadow:0 0 70px rgba(122,92,255,.08);position:relative;border-radius:24px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.note-modal-head{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid rgba(122,92,255,.14);background:rgba(10,10,20,.72)}
+.note-modal-title{font-family:'Orbitron',monospace;font-size:.95rem;letter-spacing:.08em;color:var(--text)}
+.note-modal-sub{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:rgba(122,92,255,.72);letter-spacing:.16em;margin-top:.25rem}
+.note-close{background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer}
+.note-close:hover{color:var(--pink)}
+.note-modal-body{padding:0;background:rgba(6,8,16,.95);min-height:420px;overflow:auto}
+.note-frame{width:100%;height:100%;border:none;background:#0b0f18}
+.note-fallback{padding:1.4rem;color:var(--muted);line-height:1.7}
+.note-fallback a{color:var(--cyan)}
+.note-sheet{padding:2rem 2.2rem 2.4rem;font-family:'Rajdhani',sans-serif;color:var(--text);line-height:1.75;max-width:860px}
+.note-entry{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.22em;color:var(--pink);margin-bottom:.85rem;text-transform:uppercase}
+.note-sheet-title{font-family:'Orbitron',monospace;font-size:clamp(1.5rem,2.5vw,2rem);letter-spacing:.05em;color:var(--cyan);text-shadow:var(--gc);margin-bottom:.55rem}
+.note-sheet-tagline{font-size:.92rem;color:rgba(122,122,154,.82);margin-bottom:1.5rem;font-style:italic}
+.note-sheet-divider{height:1px;background:linear-gradient(90deg,rgba(0,240,255,.28),transparent);margin:1.2rem 0 1.3rem}
+.note-section{margin-bottom:1.25rem}
+.note-label{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.55rem}
+.note-text{font-size:.98rem;color:rgba(234,234,234,.88)}
+.note-keychips{display:flex;flex-wrap:wrap;gap:.5rem}
+.note-chip{font-family:'JetBrains Mono',monospace;font-size:.68rem;padding:.34rem .78rem;border:1px solid rgba(122,92,255,.22);color:var(--purple);background:rgba(122,92,255,.06);letter-spacing:.06em}
+
+body.note-open #cur, body.note-open #cur-ring, body.modal-open #cur, body.modal-open #cur-ring{opacity:0}
+.note-modal-wrap, .note-modal-box, .note-frame, object, iframe, embed{cursor:auto !important}
+.note-close,.modal-x,.sub-btn,.cases-btn,.proj-btn,.btn,.lab-img,.case-card{cursor:pointer !important}
+
+
+/* PHILOSOPHY + PSYCHOLOGY + GAME LIBRARY */
+.study-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-bottom:1.3rem}
+.study-metric{border:1px solid var(--border);background:var(--bg2);padding:1rem 1.1rem;position:relative;overflow:hidden}
+.study-metric::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.study-metric-num{font-family:'Orbitron',monospace;font-size:1.35rem;color:var(--cyan);text-shadow:var(--gc)}
+.study-metric-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:.3rem}
+.study-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.study-grid.compact{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.study-card{border:1px solid var(--border);background:var(--bg2);padding:1.35rem;position:relative;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+.study-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--purple),transparent);opacity:.75}
+.study-card:hover{transform:translateY(-3px);border-color:rgba(122,92,255,.3);box-shadow:0 12px 34px rgba(122,92,255,.08)}
+.study-kicker{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--pink);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.55rem}
+.study-title{font-family:'Orbitron',monospace;font-size:.86rem;letter-spacing:.05em;color:var(--text);margin-bottom:.55rem;line-height:1.45}
+.study-desc{font-size:.86rem;color:var(--muted);line-height:1.7;margin-bottom:.9rem}
+.study-tags{display:flex;flex-wrap:wrap;gap:.45rem}
+.study-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:.26rem .58rem;border:1px solid rgba(122,92,255,.18);color:rgba(234,234,234,.74);background:rgba(122,92,255,.05);letter-spacing:.06em}
+.psych-layout{display:grid;grid-template-columns:1.1fr .9fr;gap:1.2rem;align-items:start}
+.panel-card{border:1px solid var(--border);background:var(--bg2);padding:1.5rem;position:relative;overflow:hidden}
+.panel-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--pink),transparent);opacity:.75}
+.lens-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}
+.lens-card{border:1px solid rgba(122,92,255,.15);background:rgba(15,15,26,.72);padding:1rem}
+.lens-title{font-family:'Orbitron',monospace;font-size:.72rem;color:var(--text);letter-spacing:.05em;margin-bottom:.35rem}
+.lens-desc{font-size:.82rem;color:var(--muted);line-height:1.6}
+.focus-strip{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.focus-pill{font-family:'JetBrains Mono',monospace;font-size:.62rem;padding:.32rem .7rem;border:1px solid rgba(0,240,255,.18);color:var(--cyan);background:rgba(0,240,255,.05);letter-spacing:.08em}
+.games-panel{border:1px solid var(--border);background:var(--bg2);padding:1.4rem;position:relative;overflow:hidden}
+.games-panel::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);opacity:.7}
+.games-topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.games-meta{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.12em}
+.game-search{min-width:260px;flex:1;max-width:340px;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.8rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;outline:none}
+.game-search:focus{border-color:rgba(0,240,255,.4);box-shadow:0 0 0 1px rgba(0,240,255,.12)}
+.filter-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.filter-btn{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;padding:.4rem .8rem;background:rgba(12,18,34,.88);color:var(--muted);border:1px solid rgba(0,240,255,.12);cursor:pointer;transition:all .2s}
+.filter-btn:hover,.filter-btn.active{color:var(--cyan);border-color:rgba(0,240,255,.34);box-shadow:var(--gc)}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem}
+.game-card{border:1px solid rgba(0,240,255,.12);background:rgba(15,15,26,.72);padding:1rem;transition:transform .2s,border-color .2s,box-shadow .2s}
+.game-card:hover{transform:translateY(-2px);border-color:rgba(0,240,255,.26);box-shadow:0 12px 28px rgba(0,240,255,.05)}
+.game-title{font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:.05em;line-height:1.45;color:var(--text);margin-bottom:.35rem}
+.game-genre{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--pink);letter-spacing:.16em;text-transform:uppercase;margin-bottom:.45rem}
+.game-note{font-size:.82rem;color:var(--muted);line-height:1.6}
+.archive-grid.single{grid-template-columns:1fr}
+@media(max-width:980px){.psych-layout{grid-template-columns:1fr}}
+@media(max-width:768px){.study-metrics{grid-template-columns:1fr}.lens-grid{grid-template-columns:1fr}.game-search{max-width:none;min-width:0;width:100%}}
+
+
+/* ACTIVE MODULES + HOBBIES */
+.module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.module-card{border:1px solid var(--border);background:var(--bg2);padding:1.35rem;position:relative;overflow:hidden;transition:all .28s}
+.module-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);opacity:.7}
+.module-card:hover{transform:translateY(-3px);border-color:rgba(0,240,255,.28);box-shadow:0 10px 28px rgba(0,240,255,.08)}
+.module-kicker{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--cyan);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.65rem}
+.module-title{font-family:'Orbitron',monospace;font-size:.86rem;letter-spacing:.06em;color:var(--text);margin-bottom:.45rem}
+.module-desc{font-size:.86rem;color:var(--muted);line-height:1.68}
+.hobby-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem}
+.hobby-card{border:1px solid var(--border);background:var(--bg2);padding:1.45rem;position:relative;overflow:hidden;cursor:pointer;transition:all .28s}
+.hobby-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--pink),transparent);opacity:.78}
+.hobby-card:hover{transform:translateY(-4px);border-color:rgba(255,43,214,.28);box-shadow:0 12px 28px rgba(255,43,214,.08)}
+.hobby-icon{font-size:1.5rem;display:block;margin-bottom:.7rem}
+.hobby-title{font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:.05em;color:var(--text);margin-bottom:.45rem}
+.hobby-desc{font-size:.86rem;color:var(--muted);line-height:1.65;margin-bottom:1rem}
+.hobby-meta{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--pink);letter-spacing:.16em;text-transform:uppercase}
+.hobby-modal-wrap{position:fixed;inset:0;background:rgba(10,10,15,.92);backdrop-filter:blur(10px);z-index:850;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.hobby-modal-wrap.open{opacity:1;pointer-events:auto}
+.hobby-modal-box{background:var(--bg2);border:1px solid rgba(255,43,214,.22);max-width:760px;width:92%;padding:2.2rem;position:relative;transform:translateY(18px);transition:transform .3s;box-shadow:0 0 60px rgba(255,43,214,.08)}
+.hobby-modal-wrap.open .hobby-modal-box{transform:translateY(0)}
+.hobby-detail-intro{color:var(--muted);line-height:1.8;font-size:.96rem;margin-bottom:1.25rem}
+.hobby-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+.hobby-detail-card{border:1px solid var(--border);background:var(--bg3);padding:1rem}
+.hobby-detail-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--pink);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.45rem}
+.hobby-detail-text{font-size:.88rem;color:var(--muted);line-height:1.7}
+@media(max-width:980px){.module-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.module-grid,.hobby-detail-grid{grid-template-columns:1fr}}
+
+/* INTERESTS ARCHIVE */
+.archive-grid{display:grid;grid-template-columns:380px 1fr;gap:1.4rem;align-items:start}
+.books-card,.cases-card{border:1px solid var(--border);background:var(--bg2);padding:1.8rem;position:relative;overflow:hidden}
+.books-card::before,.cases-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--pink),transparent);opacity:.7}
+.archive-kicker{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--pink);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.7rem}
+.archive-title{font-family:'Orbitron',monospace;font-size:1rem;letter-spacing:.06em;color:var(--text);margin-bottom:.45rem}
+.archive-copy{font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem}
+.book-totals{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin:1.1rem 0 1.4rem}
+.book-metric{border:1px solid var(--border);padding:.9rem;background:var(--bg3)}
+.book-num{font-family:'Orbitron',monospace;font-size:1.25rem;color:var(--cyan)}
+.book-lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:.18rem}
+.book-list{display:flex;flex-direction:column;gap:.85rem}
+.book-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.32rem}
+.book-name{font-size:.9rem;color:var(--text)}
+.book-count{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--cyan)}
+.book-bar{height:6px;background:rgba(255,255,255,.04);border-radius:999px;overflow:hidden}
+.book-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.archive-note{margin-top:1rem;font-size:.8rem;color:var(--muted);line-height:1.65}
+.cases-wrap{position:relative}
+.cases-meta{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(122,122,154,.72);letter-spacing:.12em;margin:0 0 1rem}
+.cases-viewport{overflow:hidden}
+.cases-track{display:flex;gap:1rem;transition:transform .35s ease;will-change:transform}
+.case-card{flex:0 0 calc((100% - 2rem)/3);min-width:calc((100% - 2rem)/3);max-width:calc((100% - 2rem)/3);border:1px solid rgba(122,92,255,.14);background:rgba(15,15,26,.72);padding:1.15rem 1rem;border-radius:18px;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s;display:flex;align-items:center;min-height:94px}
+.case-card:hover{transform:translateY(-3px);border-color:rgba(122,92,255,.28);box-shadow:0 12px 30px rgba(122,92,255,.08)}
+.case-card-title{font-family:'Orbitron',monospace;font-size:.78rem;letter-spacing:.05em;color:var(--text);line-height:1.45}
+.cases-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:1rem}
+.cases-btn{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;padding:.55rem .9rem;background:rgba(12,18,34,.9);color:var(--text);border:1px solid rgba(122,92,255,.18);cursor:pointer;border-radius:12px}
+.cases-btn:hover{border-color:rgba(122,92,255,.35);color:var(--cyan)}
+.game-filter-btn.active{border-color:rgba(0,240,255,.45);color:var(--cyan);box-shadow:var(--gc);}
+.study-card{border:1px solid var(--border);background:var(--bg2);padding:1.2rem;border-radius:18px;position:relative;overflow:hidden;min-height:180px;}
+.study-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);opacity:.55}
+.study-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1rem}
+.study-grid.compact{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
+.study-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-top:1rem}
+.study-metric{border:1px solid var(--border);padding:1rem;background:var(--bg2);border-radius:18px}
+.panel-card{border:1px solid var(--border);background:var(--bg2);padding:1.3rem;border-radius:18px}
+.psych-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:1rem;align-items:start}
+.lens-card{border:1px solid rgba(122,92,255,.18);background:rgba(122,92,255,.05);padding:1rem;border-radius:16px}
+.focus-strip{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.games-panel{border:1px solid var(--border);background:var(--bg2);padding:1.2rem;border-radius:18px}
+.games-topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+@media(max-width:900px){.psych-layout{grid-template-columns:1fr}}
+.cases-btn:disabled{opacity:.4;cursor:not-allowed}
+.cases-indicator{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:rgba(122,122,154,.75);letter-spacing:.12em}
+@media(max-width:980px){.archive-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.case-card{flex:0 0 calc((100% - 1rem)/2);min-width:calc((100% - 1rem)/2);max-width:calc((100% - 1rem)/2)}}
+@media(max-width:768px){.book-totals{grid-template-columns:1fr}}
+@media(max-width:640px){.case-card{flex:0 0 100%;min-width:100%;max-width:100%}}
+
+
+@media(max-width:768px){
+  .lab-item{grid-template-columns:1fr}
+  .lab-left{border-right:none;border-bottom:1px solid rgba(122,92,255,.1)}
+  .proj-links{flex-wrap:wrap}
 }
 
-@font-face {
-  font-weight: 500;
-  font-style:  normal;
-  font-family: 'Inter-Loom';
-
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Medium.woff2') format('woff2');
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem}
+  nav ul{display:none}
+  section{padding:5rem 1.5rem}
+  .about-grid,.contact-grid{grid-template-columns:1fr;gap:3rem}
+  .hero-cta{flex-direction:column;align-items:center}
+  .proj-grid{grid-template-columns:1fr}
 }
-@font-face {
-  font-weight: 500;
-  font-style:  italic;
-  font-family: 'Inter-Loom';
-
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-MediumItalic.woff2') format('woff2');
-}
-
-@font-face {
-  font-weight: 700;
-  font-style:  normal;
-  font-family: 'Inter-Loom';
-
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Bold.woff2') format('woff2');
-}
-@font-face {
-  font-weight: 700;
-  font-style:  italic;
-  font-family: 'Inter-Loom';
-
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-BoldItalic.woff2') format('woff2');
-}
-
-@font-face {
-  font-weight: 900;
-  font-style:  normal;
-  font-family: 'Inter-Loom';
-
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Black.woff2') format('woff2');
-}
-@font-face {
-  font-weight: 900;
-  font-style:  italic;
-  font-family: 'Inter-Loom';
-
-  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-BlackItalic.woff2') format('woff2');
-}</style>
+</style>
 </head>
+<body>
 
-<body data-gr-c-s-loaded="true">
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<div id="prog"></div>
 
+<nav>
+  <a href="#hero" class="logo">V1DHAAN</a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#concept-lab">Concept Lab</a></li>
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#criminal-psychology">Criminal Psychology</a></li>
+    <li><a href="#game-library">Games</a></li>
+    <li><a href="#archive">Archive</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 
-<!-- desktop header -->
-<header class="desktop-header-3 fixed-top">
-
-    <div class="container">
-	
-        <nav class="navbar navbar-expand-lg navbar-dark">
-           
-            <b class="navbar-brand">Victor Cardoz</b> 
-
-            <button aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarNavDropdown" data-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav ml-auto scrollspy">
-                    <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
-                    <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="#projects" class="nav-link">Projects</a></li>
-                    <li class="nav-item"><a href="#tools" class="nav-link">Tools</a></li>
-                    <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
-                    <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
-                    <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="scanlines"></div>
+  <div class="hero-content">
+    <div class="hero-tag">// SYSTEM INITIALIZED — WELCOME OPERATOR</div>
+    <h1 class="hero-name"><span class="glitch" data-text="VIDHAAN">VIDHAAN</span></h1>
+    <p class="hero-sub">Builder &nbsp;·&nbsp; Analyst &nbsp;·&nbsp; System Architect</p>
+    <div class="typing" id="typing"><span class="blink">█</span></div>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-c">View Projects</a>
+      <a href="#about" class="btn btn-p">Explore System</a>
     </div>
+  </div>
+</section>
 
-</header>
+<div class="ndiv"></div>
 
-<!-- main layout -->
-<main class="content-3">
-	
-	<!-- section home -->
-	<section id="home" class="home d-flex align-items-center">
-		<div class="container">
-
-			<!-- intro -->
-			<div class="intro">
-				<!-- avatar image -->
-				<img src="me.png" style="width: 150px;border-radius: 100px" class="mb-4">
-
-				<!-- info -->
-				<h1 class="mb-2 mt-0">Vidhaan Menon</h1>
-				<span>I'm a <span class="text-rotating morphext"><span class="animated bounceIn">Developer</span></span></span>
-			</div>
-
-			<!-- parallax layers -->
-			<div class="parallax" data-relative-input="true" style="transform: translate3d(0px, 0px, 0px); transform-style: preserve-3d; backface-visibility: hidden;">
-
-				<svg width="27" height="29" data-depth="0.3" class="layer p1" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-7.20601px, 17.2034px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block;"><path d="M21.15625.60099c4.37954 3.67487 6.46544 9.40612 5.47254 15.03526-.9929 5.62915-4.91339 10.30141-10.2846 12.25672-5.37122 1.9553-11.3776.89631-15.75715-2.77856l2.05692-2.45134c3.50315 2.93948 8.3087 3.78663 12.60572 2.22284 4.297-1.5638 7.43381-5.30209 8.22768-9.80537.79387-4.50328-.8749-9.08872-4.37803-12.02821L21.15625.60099z" fill="#FFD15C" fill-rule="evenodd"></path></svg>
-
-				<svg width="26" height="26" data-depth="0.2" class="layer p2" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-4.80401px, 11.4689px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><path d="M13 3.3541L2.42705 24.5h21.1459L13 3.3541z" stroke="#FF4C60" stroke-width="3" fill="none" fill-rule="evenodd"></path></svg>
-
-				<svg width="30" height="25" data-depth="0.3" class="layer p3" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-7.20601px, 17.2034px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><path d="M.1436 8.9282C3.00213 3.97706 8.2841.92763 14.00013.92796c5.71605.00032 10.9981 3.04992 13.85641 8 2.8583 4.95007 2.8584 11.0491-.00014 16.00024l-2.77128-1.6c2.28651-3.96036 2.28631-8.84002.00011-12.8002-2.2862-3.96017-6.5124-6.40017-11.08513-6.4-4.57271.00018-8.79872 2.43984-11.08524 6.4002l-2.77128-1.6z" fill="#44D7B6" fill-rule="evenodd"></path></svg>
-
-				<svg width="15" height="23" data-depth="0.6" class="layer p4" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-14.412px, 34.4068px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><rect transform="rotate(30 9.86603 10.13397)" x="7" width="3" height="25" rx="1.5" fill="#FFD15C" fill-rule="evenodd"></rect></svg>
-
-				<svg width="15" height="23" data-depth="0.2" class="layer p5" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-4.80401px, 11.4689px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><rect transform="rotate(30 9.86603 10.13397)" x="7" width="3" height="25" rx="1.5" fill="#6C6CE5" fill-rule="evenodd"></rect></svg>
-
-				<svg width="49" height="17" data-depth="0.5" class="layer p6" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-12.01px, 28.6724px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><g fill="#FF4C60" fill-rule="evenodd"><path d="M.5 16.5c0-5.71709 2.3825-10.99895 6.25-13.8567 3.8675-2.85774 8.6325-2.85774 12.5 0C23.1175 5.50106 25.5 10.78292 25.5 16.5H23c0-4.57303-1.90625-8.79884-5-11.08535-3.09375-2.28652-6.90625-2.28652-10 0C4.90625 7.70116 3 11.92697 3 16.5H.5z"></path><path d="M23.5 16.5c0-5.71709 2.3825-10.99895 6.25-13.8567 3.8675-2.85774 8.6325-2.85774 12.5 0C46.1175 5.50106 48.5 10.78292 48.5 16.5H46c0-4.57303-1.90625-8.79884-5-11.08535-3.09375-2.28652-6.90625-2.28652-10 0-3.09375 2.28651-5 6.51232-5 11.08535h-2.5z"></path></g></svg>
-
-				<svg width="26" height="26" data-depth="0.4" class="layer p7" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-9.60801px, 22.9379px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><path d="M13 22.6459L2.42705 1.5h21.1459L13 22.6459z" stroke="#FFD15C" stroke-width="3" fill="none" fill-rule="evenodd"></path></svg>
-
-				<svg width="19" height="21" data-depth="0.3" class="layer p8" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-7.20601px, 17.2034px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><rect transform="rotate(-40 6.25252 10.12626)" x="7" width="3" height="25" rx="1.5" fill="#6C6CE5" fill-rule="evenodd"></rect></svg>
-
-				<svg width="30" height="25" data-depth="0.3" data-depth-y="-1.30" class="layer p9" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-7.20601px, 17.2034px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><path d="M29.8564 16.0718c-2.85854 4.95114-8.1405 8.00057-13.85654 8.00024-5.71605-.00032-10.9981-3.04992-13.85641-8-2.8583-4.95007-2.8584-11.0491.00014-16.00024l2.77128 1.6c-2.28651 3.96036-2.28631 8.84002-.00011 12.8002 2.2862 3.96017 6.5124 6.40017 11.08513 6.4 4.57271-.00018 8.79872-2.43984 11.08524-6.4002l2.77128 1.6z" fill="#6C6CE5" fill-rule="evenodd"></path></svg>
-
-				<svg width="47" height="29" data-depth="0.2" class="layer p10" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-4.80401px, 11.4689px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><g fill="#44D7B6" fill-rule="evenodd"><path d="M46.78878 17.19094c-1.95535 5.3723-6.00068 9.52077-10.61234 10.8834-4.61167 1.36265-9.0893-.26708-11.74616-4.27524-2.65686-4.00817-3.08917-9.78636-1.13381-15.15866l2.34923.85505c-1.56407 4.29724-1.2181 8.92018.90705 12.12693 2.12514 3.20674 5.70772 4.5107 9.39692 3.4202 3.68921-1.0905 6.92581-4.40949 8.48988-8.70673l2.34923.85505z"></path><path d="M25.17585 9.32448c-1.95535 5.3723-6.00068 9.52077-10.61234 10.8834-4.61167 1.36264-9.0893-.26708-11.74616-4.27525C.16049 11.92447-.27182 6.14628 1.68354.77398l2.34923.85505c-1.56407 4.29724-1.2181 8.92018.90705 12.12692 2.12514 3.20675 5.70772 4.5107 9.39692 3.4202 3.68921-1.0905 6.92581-4.40948 8.48988-8.70672l2.34923.85505z"></path></g></svg>
-
-				<svg width="33" height="20" data-depth="0.5" class="layer p11" xmlns="http://www.w3.org/2000/svg" style="transform: translate3d(-12.01px, 28.6724px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;"><path d="M32.36774.34317c.99276 5.63023-1.09332 11.3614-5.47227 15.03536-4.37895 3.67396-10.3855 4.73307-15.75693 2.77837C5.76711 16.2022 1.84665 11.53014.8539 5.8999l3.15139-.55567c.7941 4.50356 3.93083 8.24147 8.22772 9.8056 4.29688 1.56413 9.10275.71673 12.60554-2.2227C28.34133 9.98771 30.01045 5.4024 29.21635.89884l3.15139-.55567z" fill="#FFD15C" fill-rule="evenodd"></path></svg>
-
-			</div>
-		</div>
-		
-	</section>
-
-	<!-- section about -->
-	<section id="about">
-
-		<div class="container">
-			
-			<!-- section title -->
-			<h2 class="section-title wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">About Me</h2>
-
-			<div class="spacer" data-height="60" style="height: 60px;"></div>
-			
-			<div class="row">
-
-				<div class="col-md-3">
-					<div class="text-center text-md-left">
-						<!-- avatar image -->
-						<img src="me.png" style="width: 150px;border-radius: 100px" class="mb-4">
-					</div>
-					<div class="spacer d-md-none d-lg-none" data-height="30" style="height: 30px;"></div>
-				</div>
-
-				<div class="col-md-9 triangle-left-md triangle-top-sm">
-					<div class="rounded bg-white shadow-dark padding-30">
-						<div class="row">
-							<div class="col-md-6">
-								<!-- about text -->
-								<p>I am Victor Cardoz, a web developer afrom Birmingham, United Kingdom. I have rich experience in building and customizing websites and app, also I am good at logo designing. Recently I have started learning machine learning and have created great apps which are mention below</p>
-
-								<div class="spacer d-md-none d-lg-none" data-height="30" style="height: 30px;"></div>
-							</div>
-							<div class="col-md-6">
-								<!-- skill item -->
-								<div class="skill-item">
-									<div class="skill-info clearfix">
-										<h4 class="float-left mb-3 mt-0">Web Development</h4>
-										<span class="float-right">85%</span>
-									</div>
-									<div class="progress">
-										<div class="progress-bar data-background" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" data-color="#FFD15C" style="background-color: orange; width: 85%;">
-										</div>
-									</div>
-									<div class="spacer" data-height="20" style="height: 20px;"></div>
-								</div>
-
-								<!-- skill item -->
-								<div class="skill-item">
-									<div class="skill-info clearfix">
-										<h4 class="float-left mb-3 mt-0">UI/UX design</h4>
-										<span class="float-right">10%</span>
-									</div>
-									<div class="progress">
-										<div class="progress-bar data-background" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10" data-color="#FF4C60" style="background-color: red; width: 10%;">
-										</div>
-									</div>
-									<div class="spacer" data-height="20" style="height: 20px;"></div>
-								</div>
-
-								<!-- skill item -->
-								<div class="skill-item">
-									<div class="skill-info clearfix">
-										<h4 class="float-left mb-3 mt-0">Python</h4>
-										<span class="float-right">10%</span>
-									</div>
-									<div class="progress">
-										<div class="progress-bar data-background" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10" data-color="#6C6CE5" style="background-color: purple; width: 10%;">
-										</div>
-									</div>
-                				  <div class="spacer" data-height="20" style="height: 20px;"></div>
-								</div>
-
-				                <!-- skill item -->
-				                <div class="skill-item">
-				                  <div class="skill-info clearfix">
-				                    <h4 class="float-left mb-3 mt-0">Machine Learning</h4>
-				                    <span class="float-right">10%</span>
-				                  </div>
-				                  <div class="progress">
-				                    <div class="progress-bar data-background" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10" data-color="#6C6CE5" style="background-color: green; width: 10%;">
-				                    </div>
-				                  </div>
-				                </div>
-
-							</div>
-						</div>
-					</div>
-				</div>
-
-			</div>
-			<!-- row end -->
-
-			<div class="spacer" data-height="70" style="height: 70px;"></div>
-			
-			<div class="row">
-				
-				<div class="col-md-3 col-sm-6">
-					<!-- fact item -->
-					<div class="fact-item">
-						<div class="details">
-							<h3 class="mb-0 mt-0 number"><em class="count">76</em></h3>
-							<p class="mb-0">Projects completed</p>
-						</div>
-					</div>
-					<div class="spacer d-md-none d-lg-none" data-height="30" style="height: 30px;"></div>
-				</div>
-
-				<div class="col-md-3 col-sm-6">
-					<!-- fact item -->
-					<div class="fact-item">
-						<div class="details">
-							<h3 class="mb-0 mt-0 number"><em class="count">160</em></h3>
-							<p class="mb-0">Number of hours spend on HTML</p>
-						</div>
-					</div>
-					<div class="spacer d-md-none d-lg-none" data-height="30" style="height: 30px;"></div>
-				</div>
-
-				<div class="col-md-3 col-sm-6">
-					<!-- fact item -->
-					<div class="fact-item">
-						<div class="details">
-							<h3 class="mb-0 mt-0 number"><em class="count">89</em></h3>
-							<p class="mb-0">Number of hours spend on PYTHON</p>
-						</div>
-					</div>
-					<div class="spacer d-md-none d-lg-none" data-height="30" style="height: 30px;"></div>
-				</div>
-
-				<div class="col-md-3 col-sm-6">
-					<!-- fact item -->
-					<div class="fact-item">
-						<div class="details">
-							<h3 class="mb-0 mt-0 number"><em class="count">250</em></h3>
-							<p class="mb-0">Number of hours spend on JS</p>
-						</div>
-					</div>
-				</div>
-
-			</div>
-
-		</div>
-		
-	</section>
-	
-  <!-- section projects -->
-  <section id="projects">
-
-    <div class="container">
-      
-      <!-- section title -->
-      <h2 class="section-title wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">My Projects</h2>
-
-      <div class="spacer" data-height="60" style="height: 60px;"></div>
-      
-      <div class="row blog-wrapper">
-        
-        <!-- projects item -->
-        <div class="col-md-4">
-          <div class="blog-item rounded bg-white shadow-dark wow fadeIn" data-wow-delay="200ms" style="visibility: visible; animation-delay: 200ms; animation-name: fadeIn;">
-            <div class="thumb">
-              <a href="https://mahdihat791.github.io/AI-Mario-Game/">
-                <img src="mario.jpeg" alt="blog-title">
-              </a>
-            </div>
-            <div class="details">
-              <h4 class="my-0 title">
-              	<a href="https://mahdihat791.github.io/AI-Mario-Game/">AI Mario Game</a>
-              </h4>
-              <ul class="list-inline meta mb-0 mt-2">
-                <li class="list-inline-item">01 Augest, 2020</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <!-- end project item -->
-
+<section id="about">
+  <div class="sec-hd reveal">
+    <span class="sec-num">01.</span>
+    <h2 class="sec-title">About</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="bio">
+        <p>I don't just use systems — I <strong>break them down</strong>, understand them, and rebuild them better.</p>
+        <p>I'm a highly analytical thinker with a deep interest in <strong>AI, psychology, and complex systems</strong>. I naturally simulate outcomes, patterns, and decisions before they happen — giving me an edge in both strategy and execution.</p>
+        <p>My work sits at the intersection of <strong>technology and control</strong> — whether it's building intelligent systems, analyzing behavior, or designing tools that actually solve real problems.</p>
+        <p>Currently focused on high-impact projects in <strong>AI and software</strong>, while constantly refining how I think, build, and operate.</p>
+        <p><strong>“He who has a why to live can bear almost any how.” — Friedrich Nietzsche</strong></p>
       </div>
-
-    </div>
-
-  </section>
-  
-    <!-- section tools -->
-  <section id="tools">
-
-    <div class="container">
-      
-      <!-- section title -->
-      <h2 class="section-title wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">Tools And Language</h2>
-
-      <div class="spacer" data-height="60" style="height: 60px;"></div>
-      
-      <!-- portolio wrapper -->
-      <div class="row portfolio-wrapper" style="position: relative; height: 595.062px;">
-        
-        <!-- tool item -->
-        <div class="col-md-4 col-sm-6 grid-item art" data-toggle="modal" data-target="#myModal" style="position: absolute; left: 0%; top: 0px;">
-            <div class="portfolio-item rounded shadow-dark">
-              <div class="details">
-                <h4 class="title">ml5.js</h4>
-              </div>
-              <div class="thumb">
-                <img src="ml5.png" alt="Portfolio-title">
-                <div class="mask"></div>
-              </div>
-            </div>
-        </div>
-        <!-- end tool item -->
-
+      <div class="stats">
+        <div class="stat-box"><div class="stat-n">3+</div><div class="stat-l">Years in the Field</div></div>
+        <div class="stat-box"><div class="stat-n">8</div><div class="stat-l">Projects Shipped</div></div>
+        <div class="stat-box"><div class="stat-n">3×</div><div class="stat-l">National Karate</div></div>
+        <div class="stat-box"><div class="stat-n">4+</div><div class="stat-l">Yrs Criminal Psych</div></div>
       </div>
     </div>
-
-  </section>
-	
-
-  <!-- section services -->
-  <section id="services">
-
-    <div class="container">
-      
-      <!-- section title -->
-      <h2 class="section-title wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">Services</h2>
-
-      <div class="spacer" data-height="60" style="height: 60px;"></div>
-      
-      <div class="row">
-
-        <!-- service box -->
-        <div class="col-md-4">
-          <div class="service-box rounded data-background padding-30 text-center shadow-yellow" data-color="#F9D74C" style="background-color: rgb(249, 215, 76);">
-            <img src="svg/service-2.svg">
-            <h3 class="mb-3 mt-0">Web Development</h3>
-            <p class="mb-0">I have rich and sharp proficiency and extensive experience in creating responsive and professional websites for all types of businesses</p>
-          </div>
-          <div class="spacer d-md-none d-lg-none" data-height="30" style="height: 30px;"></div>
+    <div class="reveal">
+      <div class="sk-group">
+        <div class="sk-lbl">// Core Languages</div>
+        <div class="sk-wrap">
+          <span class="tag tag-c">Python</span>
+          <span class="tag tag-c">C++</span>
         </div>
-        <!-- end service box -->
+      </div>
+      <div class="sk-group">
+        <div class="sk-lbl">// AI &amp; ML</div>
+        <div class="sk-wrap">
+          <span class="tag tag-p">Neural Networks</span>
+          <span class="tag tag-p">PyTorch</span>
+          <span class="tag tag-p">LLM Architecture</span>
+          <span class="tag tag-p">RAG Systems</span>
+          <span class="tag tag-p">MLOps</span>
+        </div>
+      </div>
+      <div class="sk-group">
+        <div class="sk-lbl">// Cybersecurity</div>
+        <div class="sk-wrap">
+          <span class="tag tag-v">Network Security</span>
+          <span class="tag tag-v">Threat Analysis</span>
+          <span class="tag tag-v">Pen Testing</span>
+          <span class="tag tag-v">OSINT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<div class="ndiv"></div>
+
+<section id="projects">
+  <div class="sec-hd reveal">
+    <span class="sec-num">02.</span>
+    <h2 class="sec-title">Projects</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="proj-subhead reveal">// DEPLOYED &amp; OPERATIONAL</div>
+  <div class="proj-grid" id="proj-grid"></div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="concept-lab">
+  <div class="sec-hd reveal">
+    <span class="sec-num">03.</span>
+    <h2 class="sec-title">R&amp;D // Concept Lab</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sec-subtext reveal">Handwritten concept notes translated into structured system entries.</div>
+  <div class="lab-list" id="lab-list"></div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="interests">
+  <div class="sec-hd reveal">
+    <span class="sec-num">04.</span>
+    <h2 class="sec-title">Active Modules</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sec-subtext reveal">The areas I keep coming back to when I build, study, and work through problems.</div>
+  <div class="module-grid" id="module-grid"></div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="hobbies">
+  <div class="sec-hd reveal">
+    <span class="sec-num">05.</span>
+    <h2 class="sec-title">Hobbies // Off the Clock</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sec-subtext reveal">The things I keep returning to when I am not building projects — still serious, just different kinds of time.</div>
+  <div class="hobby-grid" id="hobby-grid"></div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="philosophy">
+  <div class="sec-hd reveal">
+    <span class="sec-num">06.</span>
+    <h2 class="sec-title">Philosophy // Existential Shelf</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sec-subtext reveal">Books that shaped the way I think about identity, guilt, absurdity, loneliness, and meaning.</div>
+  <div class="study-metrics" id="philo-metrics"></div>
+  <div class="study-grid" id="philosophy-grid"></div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="criminal-psychology">
+  <div class="sec-hd reveal">
+    <span class="sec-num">07.</span>
+    <h2 class="sec-title">Criminal Psychology // Behavioral Study</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sec-subtext reveal">Part profiler, part motive map, part study of how people narrate themselves before and after crossing a line.</div>
+  <div class="psych-layout">
+    <div>
+      <div class="study-grid compact" id="psychology-grid"></div>
+    </div>
+    <div class="panel-card reveal">
+      <div class="archive-kicker">// Lenses</div>
+      <div class="archive-title">What I pay attention to</div>
+      <div class="archive-copy">Not just what someone did, but how they rationalize it, hide it, repeat it, or fracture around it. This section turns the reading list into practical behavioral lenses.</div>
+      <div class="lens-grid" id="lens-grid"></div>
+      <div class="focus-strip" id="focus-strip"></div>
+    </div>
+  </div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="game-library">
+  <div class="sec-hd reveal">
+    <span class="sec-num">08.</span>
+    <h2 class="sec-title">Game Library // Active Worlds</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sec-subtext reveal">A compact archive of the Steam library you shared — less a flex, more a map of the genres and systems I keep returning to.</div>
+  <div class="games-panel reveal">
+    <div class="games-topbar">
+      <div class="games-meta" id="games-meta"></div>
+      <input id="game-search" class="game-search" placeholder="Search your library..." />
+    </div>
+    <div class="filter-row" id="game-filters"></div>
+    <div class="game-grid" id="game-grid"></div>
+  </div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="archive">
+  <div class="sec-hd reveal">
+    <span class="sec-num">09.</span>
+    <h2 class="sec-title">Interests Archive</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sec-subtext reveal">Case analysis, offender patterns, and the crime collection you wanted to keep intact.</div>
+  <div class="archive-grid single">
+    <div class="cases-card reveal">
+      <div class="archive-kicker">// Cases</div>
+      <div class="archive-title">Case Study Index</div>
+      <div class="archive-copy">A structured archive of 113 murder cases studied for investigative significance, offender behavior, and public impact. Click any case to open a brief description.</div>
+      <div class="cases-wrap">
+        <div class="cases-meta">VISIBLE ARCHIVE WINDOW // 3 CASES AT A TIME</div>
+        <div class="cases-viewport">
+          <div class="cases-track" id="cases-track"></div>
+        </div>
+        <div class="cases-nav">
+          <button class="cases-btn" id="cases-prev">&#8592; PREV</button>
+          <div class="cases-indicator" id="cases-indicator">001–003 / 113</div>
+          <button class="cases-btn" id="cases-next">NEXT &#8594;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ndiv"></div>
+
+<section id="contact">
+  <div class="sec-hd reveal">
+    <span class="sec-num">10.</span>
+    <h2 class="sec-title">Contact</h2>
+    <div class="sec-line"></div>
+  </div>
+  <div class="contact-grid">
+    <div class="c-info reveal">
+      <h3>Establish Connection</h3>
+      <p>Have a project, a system to discuss, or just want to talk about the future? Transmit your message and I'll respond within 24 hours.</p>
+      <a href="/cdn-cgi/l/email-protection#2d48494a481c1c1c1d1f1d1d1b6d4a404c4441034e4240" class="c-link"><div class="c-dot"></div><span class="__cf_email__" data-cfemail="3f5a5b585a0e0e0e0f0d0f0f097f58525e5653115c5052">[email&#160;protected]</span></a>
+      <a href="tel:+918251059560" class="c-link"><div class="c-dot"></div>+91 82510 59560</a>
+      <a href="https://instagram.com/v1dhaan" target="_blank" class="c-link"><div class="c-dot"></div>instagram.com/v1dhaan</a>
+    </div>
+    <div class="reveal">
+            <form class="c-form" action="https://formspree.io/f/meevgyaa" method="POST">
+        <div>
+          <label class="f-lbl">// NAME</label>
+          <input class="f-in" type="text" name="name" placeholder="Enter your name" required />
+        </div>
+        <div>
+          <label class="f-lbl">// EMAIL</label>
+          <input class="f-in" type="email" name="email" placeholder="your@email.com" required />
+        </div>
+        <div>
+          <label class="f-lbl">// MESSAGE</label>
+          <textarea class="f-ta" name="message" placeholder="Transmit your message..." required></textarea>
+        </div>
+        <input type="hidden" name="_subject" value="New message from portfolio" />
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+        <button class="sub-btn" type="submit">Transmit</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="f-logo">V1DHAAN</span>
+  <div class="f-text">&#169; 2026 VIDHAAN &nbsp;&#183;&nbsp; BUILT IN THE FUTURE &nbsp;&#183;&nbsp; ALL RIGHTS RESERVED</div>
+</footer>
+
+
+<div class="note-modal-wrap" id="note-modal-wrap">
+  <div class="note-modal-box">
+    <div class="note-modal-head">
+      <div>
+        <div class="note-modal-title" id="note-modal-title">CONCEPT NOTE</div>
+        <div class="note-modal-sub" id="note-modal-sub">HANDWRITTEN ARCHIVE ENTRY</div>
+      </div>
+      <button class="note-close" id="note-close">&#10005;</button>
+    </div>
+    <div class="note-modal-body" id="note-modal-body"></div>
+  </div>
+</div>
+
+<div class="hobby-modal-wrap" id="hobby-modal-wrap">
+  <div class="hobby-modal-box">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <button class="modal-x" id="hobby-modal-close">×</button>
+    <div class="m-tag" id="hobby-modal-tag">Hobby profile</div>
+    <div class="m-title" id="hobby-modal-title">Hobby</div>
+    <div class="hobby-detail-intro" id="hobby-modal-intro"></div>
+    <div class="hobby-detail-grid">
+      <div class="hobby-detail-card">
+        <div class="hobby-detail-label">What I actually do</div>
+        <div class="hobby-detail-text" id="hobby-modal-do"></div>
+      </div>
+      <div class="hobby-detail-card">
+        <div class="hobby-detail-label">Why I keep coming back</div>
+        <div class="hobby-detail-text" id="hobby-modal-why"></div>
+      </div>
+      <div class="hobby-detail-card">
+        <div class="hobby-detail-label">Favorite lane</div>
+        <div class="hobby-detail-text" id="hobby-modal-lane"></div>
+      </div>
+      <div class="hobby-detail-card">
+        <div class="hobby-detail-label">Time disappears when</div>
+        <div class="hobby-detail-text" id="hobby-modal-flow"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="modal-wrap">
+  <div class="modal-box" id="modal-box">
+    <div class="corner c-tl"></div><div class="corner c-tr"></div>
+    <div class="corner c-bl"></div><div class="corner c-br"></div>
+    <button class="modal-x" id="modal-x">&#10005;</button>
+    <div class="m-tag" id="m-tag"></div>
+    <div class="m-title" id="m-title"></div>
+    <div class="m-desc" id="m-desc"></div>
+    <div class="m-div"></div>
+    <div class="m-lbl">Tech Stack</div>
+    <div class="sk-wrap" id="m-stack"></div>
+    <div id="m-links" style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem"><a href="#" class="m-link" id="m-link">VIEW SOURCE &#8599;</a><a href="#" class="m-link" id="m-demo-link" style="display:none">TRY DEMO &#9654;</a></div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const PROJECTS=[
+  {
+    "id": "PRJ-001",
+    "title": "Sydney",
+    "desc": "A JARVIS-inspired desktop AI assistant with voice interaction, task routing, desktop automation, OCR-assisted screen reading, and memory-backed workflows.",
+    "long": "Sydney is a desktop AI assistant built as a modular local system. It is designed around speech input, wake-word style interaction, task execution, OCR-assisted screen understanding, reminders, and memory-backed continuity. For the portfolio, the live site includes an interactive browser demo that simulates how Sydney hears commands, interprets intent, and routes actions without requiring local OS permissions.",
+    "stack": [
+      "Python",
+      "Whisper",
+      "PyQt6",
+      "SQLite",
+      "OCR",
+      "Automation"
+    ],
+    "gh": "https://github.com/v1dhaan",
+    "demo": "sydney_demo.html"
+  },
+  {
+    "id": "PRJ-002",
+    "title": "Persephone",
+    "desc": "A deception-based defensive security prototype that separates suspicious traffic from legitimate users and converts attacks into intelligence.",
+    "long": "Persephone is a research-grade defensive security prototype built around a gateway, rule-based decision engine, honeypot routing, event logging, behavioral analytics, tactical response strategies, and a live monitoring dashboard. Instead of simply blocking suspicious traffic, it isolates hostile behavior inside controlled decoy environments and turns that activity into actionable threat intelligence for defenders.",
+    "stack": [
+      "Python",
+      "FastAPI",
+      "SQLite",
+      "Docker",
+      "Threat Analytics",
+      "Honeypots"
+    ],
+    "gh": "https://github.com/v1dhaan",
+    "demo": "persephone_demo.html"
+  },
+  {
+    "id": "PRJ-003",
+    "title": "Penelope",
+    "desc": "A deterministic behavioral signal extraction engine that scores raw text for sentiment, threat, and escalation with explainable highlights.",
+    "long": "Penelope is a rule-based behavioral signal extractor built to turn raw text into structured, explainable signals. It normalizes noisy input, de-obfuscates adversarial spellings, evaluates n-grams, handles local negation, separates sentiment from threat, tracks session-aware context, and renders the result through an analyst-style interface with highlighted triggers, history, and severity insights.",
+    "stack": [
+      "Python",
+      "FastAPI",
+      "Next.js",
+      "SQLite",
+      "TypeScript",
+      "Rule Engine"
+    ],
+    "gh": "https://github.com/v1dhaan",
+    "demo": "penelope_demo.html"
+  }
+];
+
+const CONCEPTS=[
+  {
+    "id": "LAB-001",
+    "title": "NeuralForge",
+    "tagline": "A neural network engine built from first principles.",
+    "core": "NeuralForge focuses on understanding neural networks from scratch without using libraries like PyTorch or TensorFlow.",
+    "keys": [
+      "Neurons",
+      "Weights",
+      "Biases",
+      "Forward propagation",
+      "Backpropagation",
+      "Gradient descent"
+    ],
+    "insight": "Neural networks are layered calculus systems, not magic.",
+    "applications": "Better understanding of AI systems and custom model building.",
+    "status": "ARCHITECTING",
+    "noteFile": "NeuralForge.pdf"
+  },
+  {
+    "id": "LAB-002",
+    "title": "MindGraph",
+    "tagline": "A local-first AI knowledge graph.",
+    "core": "Transforms notes and documents into a connected graph that surfaces relationships between ideas.",
+    "keys": [
+      "Nodes (ideas)",
+      "Edges (relationships)",
+      "Embeddings"
+    ],
+    "insight": "Knowledge is not stored, it is connected.",
+    "applications": "Second-brain system for research and thinking.",
+    "status": "DESIGNING",
+    "noteFile": "MindGraph.pdf"
+  },
+  {
+    "id": "LAB-003",
+    "title": "BehaviorNet",
+    "tagline": "Sequence-based intrusion detection using LSTMs.",
+    "core": "Learns normal system behavior and flags anomalies by modeling syscall sequences over time.",
+    "keys": [
+      "Syscall sequences",
+      "LSTM networks"
+    ],
+    "insight": "Security is about understanding normal behavior.",
+    "applications": "Zero-day attack detection.",
+    "status": "RESEARCHING",
+    "noteFile": "BehaviorNet.pdf"
+  },
+  {
+    "id": "LAB-004",
+    "title": "Profiler",
+    "tagline": "ML-driven behavioral pattern analysis.",
+    "core": "Analyzes crime reports using NLP and clustering to reveal recurring behavioral structures.",
+    "keys": [
+      "NLP extraction",
+      "Clustering"
+    ],
+    "insight": "Patterns repeat before criminals are caught.",
+    "applications": "Criminal investigation support.",
+    "status": "DESIGNING",
+    "noteFile": "Profiler.pdf"
+  },
+  {
+    "id": "LAB-005",
+    "title": "ThreatWatch",
+    "tagline": "Real-time OSINT threat intelligence aggregator.",
+    "core": "Aggregates cybersecurity data sources into one interface built for prioritization instead of raw volume.",
+    "keys": [
+      "CVE feeds",
+      "Threat prioritization"
+    ],
+    "insight": "Information without prioritization is useless.",
+    "applications": "Security monitoring dashboards.",
+    "status": "ARCHITECTING",
+    "noteFile": "ThreatWatch.pdf"
+  },
+  {
+    "id": "LAB-006",
+    "title": "ShadowNet",
+    "tagline": "Decentralized encrypted communication.",
+    "core": "A peer-to-peer secure messaging design with no central server and minimal trust assumptions.",
+    "keys": [
+      "Encryption",
+      "P2P networking"
+    ],
+    "insight": "The most secure system has no center.",
+    "applications": "Secure communications.",
+    "status": "RESEARCHING",
+    "noteFile": "ShadowNet.pdf"
+  },
+  {
+    "id": "LAB-007",
+    "title": "AutoTrain",
+    "tagline": "Local MLOps pipeline.",
+    "core": "Runs the ML lifecycle locally with tight control over training, evaluation, and versioning.",
+    "keys": [
+      "Training",
+      "Evaluation",
+      "Versioning"
+    ],
+    "insight": "Control is more important than scale initially.",
+    "applications": "Offline ML workflows.",
+    "status": "DESIGNING",
+    "noteFile": "AutoTrain.pdf"
+  },
+  {
+    "id": "LAB-008",
+    "title": "Persephone v2",
+    "tagline": "AI-assisted vulnerability triage.",
+    "core": "Prioritizes vulnerabilities using AI so remediation focuses on exploitability instead of noise.",
+    "keys": [
+      "Risk scoring",
+      "Exploitability"
+    ],
+    "insight": "Fixing the right vulnerability matters most.",
+    "applications": "Cybersecurity remediation.",
+    "status": "ARCHITECTING",
+    "noteFile": "Persephone_v2.pdf"
+  }
+];
+
+// Render real projects
+document.getElementById('proj-grid').innerHTML=PROJECTS.map((p,i)=>`
+  <div class="proj-card reveal" data-idx="${i}" style="transition-delay:${i*.1}s">
+    <div class="proj-id">${p.id}</div>
+    <div class="proj-title">${p.title}</div>
+    <div class="proj-desc">${p.desc}</div>
+    <div class="proj-stack">${p.stack.map(s=>`<span class="stk">${s}</span>`).join('')}</div>
+    <div class="proj-links">
+      <a href="${p.gh}" target="_blank" class="proj-btn proj-btn-gh" onclick="event.stopPropagation()">&#8599; GitHub</a>
+      ${p.demo?`<a href="${p.demo}" target="_blank" class="proj-btn proj-btn-demo" onclick="event.stopPropagation()">&#9654; Demo</a>`:''}
+    </div>
+    <div class="proj-arrow">&#8599;</div>
+  </div>`).join('');
+
+// Per-concept SVG illustrations — all built as plain strings, no template nesting
+function mkSVG(inner){return '<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">'+inner+'</svg>';}
+function circ(cx,cy,r,stroke,fill,fo,sw,extra){return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+fill+'" fill-opacity="'+fo+'" stroke="'+stroke+'" stroke-width="'+sw+'" '+(extra||'')+'/>';}
+function line(x1,y1,x2,y2,stroke,sw,extra){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+stroke+'" stroke-width="'+sw+'" '+(extra||'')+'/>';}
+function txt(x,y,anchor,fs,fill,op,label){return '<text x="'+x+'" y="'+y+'" text-anchor="'+anchor+'" font-family="JetBrains Mono,monospace" font-size="'+fs+'" fill="'+fill+'" opacity="'+op+'">'+label+'</text>';}
+
+// LAB-001 NeuralForge
+var img0=(function(){
+  var s='<defs><filter id="ng0"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  var L1=[[30,25],[30,55],[30,85],[30,115]];
+  var L2=[[100,15],[100,45],[100,75],[100,105],[100,135]];
+  var L3=[[170,45],[170,95]];
+  L1.forEach(function(a){s+=circ(a[0],a[1],6,'#7a5cff','none',1,1,'opacity=".6"');});
+  L2.forEach(function(a){s+=circ(a[0],a[1],6,'#7a5cff','none',1,1,'opacity=".55"');});
+  L3.forEach(function(a){s+=circ(a[0],a[1],8,'#00f0ff','#7a5cff',.15,1.5,'filter="url(#ng0)"');});
+  L1.forEach(function(a){L2.forEach(function(b){s+=line(a[0]+6,a[1],b[0]-6,b[1],'#7a5cff','.35','opacity=".2"');});});
+  L2.forEach(function(a){L3.forEach(function(b){s+=line(a[0]+6,a[1],b[0]-8,b[1],'#00f0ff','.4','opacity=".28"');});});
+  s+=circ(30,55,6,'#7a5cff','#7a5cff',.35,1.5,'');
+  s+=circ(100,75,6,'#00f0ff','#7a5cff',.3,1.5,'');
+  s+=txt(100,152,'middle',7,'#7a5cff',.5,'NEURAL ARCHITECTURE');
+  return mkSVG(s);
+}());
+
+// LAB-002 MindGraph
+var img1=(function(){
+  var s='<defs><filter id="mg0"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  var nodes=[[100,60,'#00f0ff',12,.25],[55,100,'#7a5cff',7,.12],[145,100,'#7a5cff',7,.12],[30,38,'#7a5cff',6,.1],[170,38,'#7a5cff',6,.1],[80,130,'#7a5cff',5,.1],[120,130,'#7a5cff',5,.1]];
+  var edges=[[100,60,55,100],[100,60,145,100],[100,60,30,38],[100,60,170,38],[100,60,80,130],[100,60,120,130],[55,100,30,38],[145,100,170,38],[80,130,55,100]];
+  edges.forEach(function(e){s+=line(e[0],e[1],e[2],e[3],'#7a5cff','.5','opacity=".22"');});
+  nodes.forEach(function(n){s+=circ(n[0],n[1],n[2],n[3],n[3],n[4],n[0]===100?1.5:1,'filter="url(#mg0)"');});
+  s+=txt(100,152,'middle',7,'#7a5cff',.5,'KNOWLEDGE GRAPH');
+  return mkSVG(s);
+}());
+
+// LAB-003 BehaviorNet
+var img2=(function(){
+  var s='';
+  var heights=[18,35,12,42,8,30,22,38,15];
+  s+=txt(10,18,'start',6,'#7a5cff',.4,'syscall_seq[]');
+  heights.forEach(function(h,i){
+    var x=14+i*20; var y=95-h; var op=(.1+i*.04).toFixed(2);
+    s+='<rect x="'+x+'" y="'+y+'" width="9" height="'+h+'" fill="#7a5cff" fill-opacity="'+op+'" stroke="#7a5cff" stroke-width=".4"/>';
+  });
+  s+='<polyline points="14,95 34,77 54,83 74,53 94,87 114,65 134,73 154,57 174,80 194,95" fill="none" stroke="#00f0ff" stroke-width="1" opacity=".45" stroke-dasharray="3,2"/>';
+  s+=line(10,95,194,95,'#7a5cff','.4','opacity=".3"');
+  s+='<rect x="68" y="49" width="36" height="50" fill="#ff2bd6" fill-opacity=".04" stroke="#ff2bd6" stroke-width=".7" stroke-dasharray="2,2"/>';
+  s+=txt(86,44,'middle',6,'#ff2bd6',.55,'ANOMALY');
+  s+=txt(100,125,'middle',7,'#7a5cff',.5,'SEQUENCE MODEL');
+  return mkSVG(s);
+}());
+
+// LAB-004 Profiler
+var img3=(function(){
+  var s='';
+  s+=txt(10,14,'start',6,'#7a5cff',.4,'behavioral_clusters');
+  [[40,50,8],[55,65,5],[35,72,4],[48,58,6]].forEach(function(n){s+=circ(n[0],n[1],n[2],'#ff2bd6','#ff2bd6',.12,.8,'opacity=".7"');});
+  [[130,40,6],[145,55,8],[120,60,5],[138,48,4]].forEach(function(n){s+=circ(n[0],n[1],n[2],'#7a5cff','#7a5cff',.15,.8,'opacity=".7"');});
+  [[85,95,7],[100,85,5],[75,100,4],[95,108,6]].forEach(function(n){s+=circ(n[0],n[1],n[2],'#00f0ff','#00f0ff',.1,.8,'opacity=".6"');});
+  s+='<ellipse cx="46" cy="61" rx="24" ry="18" fill="none" stroke="#ff2bd6" stroke-width=".6" stroke-dasharray="3,2" opacity=".35"/>';
+  s+='<ellipse cx="134" cy="50" rx="22" ry="16" fill="none" stroke="#7a5cff" stroke-width=".6" stroke-dasharray="3,2" opacity=".35"/>';
+  s+='<ellipse cx="88" cy="97" rx="22" ry="14" fill="none" stroke="#00f0ff" stroke-width=".6" stroke-dasharray="3,2" opacity=".35"/>';
+  s+=txt(100,128,'middle',7,'#7a5cff',.5,'BEHAVIORAL CLUSTERING');
+  return mkSVG(s);
+}());
+
+// LAB-005 ThreatWatch
+var img4=(function(){
+  var s='<defs><filter id="tw0"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  [50,38,26,14].forEach(function(r){s+=circ(100,72,r,'#7a5cff','none',1,.5,'opacity=".3"');});
+  [0,60,120,180,240,300].forEach(function(a){
+    var rad=a*Math.PI/180;
+    var x2=(100+50*Math.sin(rad)).toFixed(1);
+    var y2=(72-50*Math.cos(rad)).toFixed(1);
+    s+=line(100,72,x2,y2,'#7a5cff','.4','opacity=".22"');
+  });
+  s+='<polygon points="100,34 126,82 74,82" fill="#ff2bd6" fill-opacity=".07" stroke="#ff2bd6" stroke-width="1" opacity=".55" filter="url(#tw0)"/>';
+  s+=circ(100,72,4,'#ff2bd6','#ff2bd6',.5,1,'filter="url(#tw0)"');
+  [[20,38,'CVE'],[154,44,'BREACH'],[158,95,'OSINT'],[18,96,'APT']].forEach(function(n){s+=txt(n[0],n[1],'start',6,'#7a5cff',.5,n[2]);});
+  s+=txt(100,130,'middle',7,'#7a5cff',.5,'THREAT RADAR');
+  return mkSVG(s);
+}());
+
+// LAB-006 ShadowNet
+var img5=(function(){
+  var s='<defs><filter id="sn0"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  var nodes=[[30,28],[170,28],[100,70],[30,115],[170,115],[65,48],[135,48],[65,98],[135,98]];
+  var edges=[[0,1],[0,2],[0,3],[1,2],[1,4],[2,3],[2,4],[3,4],[5,6],[7,8],[5,7],[6,8],[0,5],[1,6],[3,7],[4,8]];
+  edges.forEach(function(e){var a=nodes[e[0]];var b=nodes[e[1]];s+=line(a[0],a[1],b[0],b[1],'#7a5cff','.4','opacity=".18" stroke-dasharray="3,3"');});
+  nodes.forEach(function(n,i){s+=circ(n[0],n[1],i<5?7:5,'#7a5cff','#7a5cff',.12,i<5?1:.7,'filter="url(#sn0)"');});
+  s+=txt(100,14,'middle',6,'#00f0ff',.35,'E2E ENCRYPTED');
+  s+=txt(100,134,'middle',7,'#7a5cff',.5,'PEER MESH');
+  return mkSVG(s);
+}());
+
+// LAB-007 AutoTrain
+var img6=(function(){
+  var s='<defs><marker id="at0" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#00f0ff" stroke-width="1.2"/></marker></defs>';
+  [['DATA',15],['PREP',63],['TRAIN',111],['EVAL',159]].forEach(function(b){
+    s+='<rect x="'+b[1]+'" y="52" width="40" height="22" rx="2" fill="#7a5cff" fill-opacity=".1" stroke="#7a5cff" stroke-width=".8"/>';
+    s+=txt(b[1]+20,67,'middle',7,'#7a5cff',.7,b[0]);
+  });
+  [[55,63],[103,63],[151,63]].forEach(function(p){
+    s+=line(p[0],p[1],p[0]+8,p[1],'#00f0ff',1,'opacity=".4" marker-end="url(#at0)"');
+  });
+  s+='<rect x="15" y="88" width="172" height="14" rx="2" fill="#7a5cff" fill-opacity=".05" stroke="#7a5cff" stroke-width=".5" stroke-dasharray="3,3"/>';
+  s+='<rect x="15" y="88" width="108" height="14" rx="2" fill="#00f0ff" fill-opacity=".08" stroke="none"/>';
+  s+=txt(99,99,'middle',6,'#00f0ff',.5,'EPOCH 62%');
+  s+=txt(100,122,'middle',7,'#7a5cff',.5,'TRAINING PIPELINE');
+  return mkSVG(s);
+}());
+
+// LAB-008 Persephone v2
+var img7=(function(){
+  var s='<defs><filter id="pv0"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  var hosts=[[30,28],[170,28],[18,70],[182,70],[30,112],[170,112],[100,112],[58,48],[142,48]];
+  var ports=['22','443','80','8080','21','3306'];
+  hosts.forEach(function(h,i){
+    s+=line(h[0],h[1],100,65,'#7a5cff','.5','opacity=".2"');
+    s+=circ(h[0],h[1],5,'#7a5cff','#7a5cff',.12,.8,'');
+    if(i<6){s+=txt(h[0],h[1]-8,'middle',5.5,'#00f0ff',.42,':'+ports[i]);}
+  });
+  s+=circ(100,65,14,'#ff2bd6','#ff2bd6',.1,1.5,'filter="url(#pv0)"');
+  s+=txt(100,69,'middle',6,'#ff2bd6',.8,'AI');
+  s+=txt(100,130,'middle',7,'#7a5cff',.5,'AI TRIAGE LAYER');
+  return mkSVG(s);
+}());
+
+const LAB_IMGS=[img0,img1,img2,img3,img4,img5,img6,img7];
+
+// Render concept lab
+document.getElementById('lab-list').innerHTML=CONCEPTS.map((c,i)=>`
+  <div class="lab-item reveal" style="transition-delay:${i*.07}s">
+    <div class="lab-left">
+      <div class="lab-img" onclick="openConceptNote(${i})">${LAB_IMGS[i]}</div>
+      <div class="lab-status-badge">STATUS: ${c.status}</div>
+    </div>
+    <div class="lab-right">
+      <div class="lab-id">${c.id}</div>
+      <div class="lab-title">${c.title}</div>
+      <div class="lab-tagline">${c.tagline}</div>
+      <div class="lab-fields">
+        <div class="lab-field">
+          <div class="lab-field-key">// Core Idea</div>
+          <div class="lab-field-val">${c.core}</div>
+        </div>
+        <div class="lab-field">
+          <div class="lab-field-key">// Key Concepts</div>
+          <div class="lab-keychips">${c.keys.map(k=>`<span class="lab-chip">${k}</span>`).join('')}</div>
+        </div>
+        <div class="lab-field">
+          <div class="lab-field-key">// Insight</div>
+          <div class="lab-field-val">${c.insight}</div>
+        </div>
+        <div class="lab-field">
+          <div class="lab-field-key">// Applications</div>
+          <div class="lab-field-val">${c.applications}</div>
+        </div>
+      </div>
+    </div>
+  </div>`).join('');
+
+const CASES=[
+  {
+    "name": "Jack the Ripper Murders",
+    "desc": "A series of killings in Whitechapel, usually linked to five canonical victims. The unidentified killer became one of history’s most famous unsolved murder cases."
+  },
+  {
+    "name": "Lizzie Borden Case",
+    "desc": "Andrew and Abby Borden were killed with an axe. Lizzie Borden was tried and acquitted, but the case remains one of America’s most debated Victorian-era murders."
+  },
+  {
+    "name": "Belle Gunness Farm Murders",
+    "desc": "Human remains found on Belle Gunness’s farm suggested multiple murders tied to fraud, personal ads, and disappearances. Whether Gunness died in the fire or escaped remains disputed."
+  },
+  {
+    "name": "Dr. Crippen Case",
+    "desc": "Hawley Harvey Crippen was convicted of killing his wife, Cora. The case became famous for early international police communication and transatlantic pursuit."
+  },
+  {
+    "name": "Hall-Mills Murders",
+    "desc": "A priest and a choir singer were found shot to death in a sensational case fueled by rumors of romance, scandal, and a highly publicized trial."
+  },
+  {
+    "name": "Leopold and Loeb Murder",
+    "desc": "Nathan Leopold and Richard Loeb murdered 14-year-old Bobby Franks in a so-called ‘perfect crime.’ The case became a landmark study in privilege, motive, and criminal psychology."
+  },
+  {
+    "name": "Sacco and Vanzetti-linked Guard Murders Context",
+    "desc": "Though better known as a robbery-murder prosecution than a classic detective case, the deaths at South Braintree became one of the most controversial criminal cases in U.S. history."
+  },
+  {
+    "name": "St. Valentine’s Day Massacre",
+    "desc": "Seven men associated with Bugs Moran’s gang were lined up and shot in a gangland execution. The massacre became the defining image of Prohibition-era organized-crime violence."
+  },
+  {
+    "name": "Lindbergh Baby Murder",
+    "desc": "The kidnapping and death of Charles Lindbergh Jr. led to the conviction of Bruno Hauptmann. The case reshaped U.S. law enforcement and media treatment of major crimes."
+  },
+  {
+    "name": "Black Dahlia Murder",
+    "desc": "Elizabeth Short was found murdered in a highly publicized and brutal case. Despite decades of theories, it remains one of America’s most famous unsolved homicides."
+  },
+  {
+    "name": "The Torso Murders of Cleveland",
+    "desc": "A series of dismemberment murders shocked Cleveland and were never conclusively solved. The investigation is often linked with Eliot Ness."
+  },
+  {
+    "name": "The Boy in the Box",
+    "desc": "An unidentified young boy was found dead in a cardboard box. The case stayed unsolved for decades before modern genealogy helped identify him as Joseph Augustus Zarelli."
+  },
+  {
+    "name": "The Clutter Family Murders",
+    "desc": "Four members of the Clutter family were killed in Holcomb, Kansas. Truman Capote’s In Cold Blood turned the case into one of the most famous true-crime narratives ever written."
+  },
+  {
+    "name": "Murder of Kitty Genovese",
+    "desc": "Kitty Genovese was killed outside her apartment. The case became widely cited in discussions of the ‘bystander effect,’ though later reporting complicated the original narrative."
+  },
+  {
+    "name": "Moors Murders",
+    "desc": "Ian Brady and Myra Hindley killed multiple children and buried victims on Saddleworth Moor. The case remains one of Britain’s most infamous child-murder investigations."
+  },
+  {
+    "name": "The Boston Strangler Case",
+    "desc": "A series of murders of women were linked to the ‘Boston Strangler.’ Albert DeSalvo confessed, but questions about whether one killer committed all the murders persist."
+  },
+  {
+    "name": "Murder of President John F. Kennedy",
+    "desc": "The assassination of JFK remains one of the most scrutinized homicide cases in modern history. Lee Harvey Oswald was identified as the gunman, but conspiracy theories endure."
+  },
+  {
+    "name": "Murder of Malcolm X",
+    "desc": "Civil-rights leader Malcolm X was assassinated while speaking in Harlem. Later reviews of the convictions intensified debate over wrongful prosecution and institutional failures."
+  },
+  {
+    "name": "Murder of Martin Luther King Jr.",
+    "desc": "Martin Luther King Jr. was shot on a motel balcony. James Earl Ray pleaded guilty, but the case has remained central to debates over conspiracy, race, and justice in America."
+  },
+  {
+    "name": "Manson Family Murders",
+    "desc": "Followers of Charles Manson killed multiple victims, including actress Sharon Tate. The case became a symbol of cult violence and the dark end of the 1960s counterculture."
+  },
+  {
+    "name": "Zodiac Killer Murders",
+    "desc": "A serial killer taunted police and the press with letters and ciphers. The identity of the Zodiac remains unconfirmed, making it one of the world’s most famous unsolved series."
+  },
+  {
+    "name": "The Atlanta Child Murders",
+    "desc": "A string of killings of Black children and young adults terrified Atlanta. Wayne Williams was convicted in two adult deaths, but debate continues over the broader case."
+  },
+  {
+    "name": "Yorkshire Ripper Murders",
+    "desc": "Peter Sutcliffe murdered multiple women across northern England. The case exposed major investigative failures and deep problems in police assumptions about victims."
+  },
+  {
+    "name": "Murder of John Lennon",
+    "desc": "John Lennon was shot outside the Dakota building by Mark David Chapman. The killing shocked the world and remains one of the most recognized celebrity murders ever."
+  },
+  {
+    "name": "Tylenol Cyanide Murders",
+    "desc": "Several people died after taking cyanide-laced Tylenol capsules. Though technically a product-tampering homicide case, it transformed packaging, public safety, and criminal investigation."
+  },
+  {
+    "name": "The Green River Murders",
+    "desc": "Gary Ridgway was convicted of killing numerous women, many of them vulnerable and marginalized. The case became one of the deadliest serial-murder investigations in U.S. history."
+  },
+  {
+    "name": "The Night Stalker Case",
+    "desc": "Richard Ramirez committed a string of murders and assaults that spread fear across Los Angeles and San Francisco. His crimes made him one of the most notorious serial killers in America."
+  },
+  {
+    "name": "Murder of Indira Gandhi",
+    "desc": "Prime Minister Indira Gandhi was assassinated by two bodyguards after Operation Blue Star. The killing triggered major political upheaval and anti-Sikh violence."
+  },
+  {
+    "name": "Murder of Olof Palme",
+    "desc": "Sweden’s prime minister was shot on a public street after leaving a cinema. Decades of investigation followed before authorities closed the case naming a likely suspect without trial."
+  },
+  {
+    "name": "Murder of Prime Minister Rajiv Gandhi",
+    "desc": "Rajiv Gandhi was killed in a suicide bombing during an election campaign event. The assassination reshaped Indian politics and regional security concerns."
+  },
+  {
+    "name": "The West Memphis Three Case",
+    "desc": "Three boys were murdered, and three teenagers were convicted in a case later attacked for weak evidence and moral panic. It became a global symbol of wrongful-conviction concerns."
+  },
+  {
+    "name": "Murder of James Bulger",
+    "desc": "Two 10-year-old boys abducted and killed 2-year-old James Bulger. The case horrified the public and forced difficult debates about childhood, violence, and criminal responsibility."
+  },
+  {
+    "name": "The O.J. Simpson Case",
+    "desc": "Nicole Brown Simpson and Ron Goldman were murdered in a case that became a media phenomenon. O.J. Simpson was acquitted criminally but later found liable in civil court."
+  },
+  {
+    "name": "The Brown’s Chicken Massacre",
+    "desc": "Seven employees were murdered at a restaurant in a robbery case. Years later, DNA evidence helped solve what had become one of the region’s most haunting unsolved killings."
+  },
+  {
+    "name": "The Gainesville Ripper Murders",
+    "desc": "Danny Rolling murdered five students in Gainesville. The case shocked college communities and is often cited as part of the atmosphere that inspired Scream."
+  },
+  {
+    "name": "Murder of Gianni Versace",
+    "desc": "Fashion designer Gianni Versace was shot outside his home by Andrew Cunanan. The killing turned a multi-state manhunt into international news."
+  },
+  {
+    "name": "Murder of Tupac Shakur",
+    "desc": "Rapper Tupac Shakur died after a drive-by shooting. The case became one of music history’s most famous unsolved murders for decades."
+  },
+  {
+    "name": "Murder of The Notorious B.I.G.",
+    "desc": "Christopher Wallace was killed in a drive-by shooting months after Tupac’s death. The case remains central to discussions of hip-hop violence, policing, and conspiracy."
+  },
+  {
+    "name": "JonBenét Ramsey Case",
+    "desc": "Six-year-old JonBenét Ramsey was found dead in her home. The case became one of the most intensely publicized unsolved child-murder investigations in the world."
+  },
+  {
+    "name": "Murder of Jill Dando",
+    "desc": "Television presenter Jill Dando was shot outside her home. A conviction was later quashed, and the case remains unsolved and heavily debated."
+  },
+  {
+    "name": "Columbine-related Teacher Murder Context",
+    "desc": "Though Columbine is primarily remembered as a mass school attack, the murders there reshaped public discourse on youth violence, media, and warning signs."
+  },
+  {
+    "name": "The Snowtown Murders",
+    "desc": "A group of offenders killed multiple victims, with remains found in barrels in a bank vault. The case is among Australia’s most infamous serial murder investigations."
+  },
+  {
+    "name": "Murder of Hae Min Lee",
+    "desc": "The killing of teenager Hae Min Lee became globally known through the Serial podcast. Its legal twists turned the case into a major discussion of evidence, memory, and appeals."
+  },
+  {
+    "name": "Murder of Amadou Diallo",
+    "desc": "Though a police shooting rather than a classic detective case, Diallo’s death became a major case in debates over force, race, and the criminal-justice system."
+  },
+  {
+    "name": "Aileen Wuornos Murders",
+    "desc": "Aileen Wuornos killed several men and was later executed. The case drew enormous interest because of questions about trauma, self-defense claims, and media portrayal."
+  },
+  {
+    "name": "The Suffolk Strangler Murders",
+    "desc": "A series of killings of women in and around Ipswich led to the conviction of Steve Wright. The case highlighted risks faced by vulnerable women and investigative use of forensic links."
+  },
+  {
+    "name": "The BTK Murders",
+    "desc": "Dennis Rader murdered multiple victims and taunted authorities as ‘BTK.’ He was eventually caught decades later after resuming communication with police. High-profile trials, celebrity cases & modern investigations"
+  },
+  {
+    "name": "Murder of Laci Peterson",
+    "desc": "Laci Peterson disappeared while pregnant, and her remains were later found. The conviction of Scott Peterson turned the case into one of the biggest American media trials of the 2000s."
+  },
+  {
+    "name": "D.C. Sniper Attacks",
+    "desc": "A series of shootings by John Allen Muhammad and Lee Boyd Malvo caused widespread fear. Their random-style attacks changed policing responses to mobile shooting cases."
+  },
+  {
+    "name": "Soham Murders",
+    "desc": "Schoolgirls Holly Wells and Jessica Chapman were murdered by Ian Huntley. The case led to major reforms in vetting and information sharing in the UK."
+  },
+  {
+    "name": "Murder of Jessica Lunsford",
+    "desc": "Nine-year-old Jessica Lunsford was abducted and murdered, leading to national outrage. The case intensified debates around offender monitoring and child-protection laws."
+  },
+  {
+    "name": "The Long Island Serial Killer Case",
+    "desc": "Human remains found along Gilgo Beach pointed to multiple killings over many years. The investigation drew renewed attention after a suspect was charged in several murders."
+  },
+  {
+    "name": "Murder of Meredith Kercher",
+    "desc": "British student Meredith Kercher was killed in Italy, leading to years of legal reversals, international media attention, and debate over forensic interpretation."
+  },
+  {
+    "name": "Murder of Benazir Bhutto",
+    "desc": "Former prime minister Benazir Bhutto was assassinated after a political rally. The killing had enormous consequences for Pakistan’s politics and security environment."
+  },
+  {
+    "name": "Murder of Aarushi Talwar and Hemraj",
+    "desc": "Teenager Aarushi Talwar and domestic worker Hemraj were found dead in a case that became one of India’s most discussed modern murder trials."
+  },
+  {
+    "name": "Murder of Nithari Children Case",
+    "desc": "A series of child disappearances and murders in Nithari exposed severe investigative and social failures. The case shocked India because of its scale and horror."
+  },
+  {
+    "name": "Murder of Neeraj Grover",
+    "desc": "Television executive Neeraj Grover was killed in a case involving jealousy and cover-up. The crime became high-profile due to media industry connections and sensational evidence."
+  },
+  {
+    "name": "Murder of Sheena Bora",
+    "desc": "Sheena Bora’s killing became a major Indian case because of family deception, hidden relationships, and the arrest of media executive Indrani Mukerjea."
+  },
+  {
+    "name": "Murder of Jessica Lal",
+    "desc": "Jessica Lal was shot at a social event, and the case became a landmark in India after public pressure helped overturn an acquittal and secure convictions."
+  },
+  {
+    "name": "Murder of Nitish Katara",
+    "desc": "Nitish Katara was killed in an alleged honor-based murder. The case became a symbol of class, political influence, and perseverance in long legal battles."
+  },
+  {
+    "name": "Murder of Priyadarshini Mattoo",
+    "desc": "Law student Priyadarshini Mattoo was murdered in a case that drew intense criticism of police and influence before a later conviction."
+  },
+  {
+    "name": "Murder of Geeta and Sanjay Chopra",
+    "desc": "The kidnapping and murder of two siblings by Billa and Ranga horrified India and became one of its most remembered child-murder cases."
+  },
+  {
+    "name": "Murder of Maria Colaco",
+    "desc": "Also known in relation to the Joshi-Abhyankar era of fear, the case forms part of a period of violent murders that deeply unsettled urban India."
+  },
+  {
+    "name": "Joshi-Abhyankar Serial Murders",
+    "desc": "A group of young men committed multiple murders in Pune, generating public fear and one of India’s most infamous serial-crime episodes."
+  },
+  {
+    "name": "Murder of Dr. Narendra Dabholkar",
+    "desc": "Rationalist Narendra Dabholkar was shot dead while on a morning walk. The case became nationally significant due to its ideological implications and long investigation."
+  },
+  {
+    "name": "Murder of Gauri Lankesh",
+    "desc": "Journalist Gauri Lankesh was shot outside her home. The murder intensified concerns over extremism, free speech, and targeted political violence in India."
+  },
+  {
+    "name": "Murder of Sidhu Moose Wala",
+    "desc": "Punjabi singer Sidhu Moose Wala was shot dead in a high-profile gang-linked killing that drew huge public and media attention."
+  },
+  {
+    "name": "Murder of Sushant Singh Rajput Context",
+    "desc": "Although ruled a death by suicide rather than murder, the case became one of India’s most heavily contested death investigations in public discourse."
+  },
+  {
+    "name": "Murder of Sunanda Pushkar",
+    "desc": "The death of Sunanda Pushkar in a hotel room prompted years of legal and media scrutiny over whether the case involved murder or other causes."
+  },
+  {
+    "name": "Golden State Killer Murders",
+    "desc": "Joseph James DeAngelo committed a series of murders, rapes, and burglaries across California. Genetic genealogy later cracked one of the era’s most notorious cold-case series."
+  },
+  {
+    "name": "Murder of Harvey Milk and George Moscone",
+    "desc": "City supervisor Dan White killed both men at city hall. The case had lasting impact on LGBTQ+ history, politics, and public reaction to criminal sentencing."
+  },
+  {
+    "name": "Murder of Rebecca Schaeffer",
+    "desc": "Actress Rebecca Schaeffer was killed by an obsessed stalker. Her death led to stronger anti-stalking legislation in the United States."
+  },
+  {
+    "name": "Murder of Selena",
+    "desc": "Singer Selena Quintanilla-Pérez was shot and killed by Yolanda Saldívar. The case devastated fans and became one of the most remembered celebrity murders in Latin music history."
+  },
+  {
+    "name": "Murder of Nicole Brown Simpson and Ron Goldman",
+    "desc": "The underlying double homicide in the O.J. Simpson trial remains a defining American murder case because of race, fame, media, and courtroom strategy."
+  },
+  {
+    "name": "Murder of Giulia Cecchettin",
+    "desc": "The killing of Giulia Cecchettin sparked national outrage and renewed debate in Italy about femicide and violence against women."
+  },
+  {
+    "name": "Murder of Sarah Everard",
+    "desc": "Sarah Everard was abducted and murdered by a serving police officer. The case triggered broad public anger over women’s safety and institutional trust."
+  },
+  {
+    "name": "Murder of Ashling Murphy",
+    "desc": "Teacher Ashling Murphy was killed while exercising outdoors. Her murder prompted nationwide grief and urgent discussion about violence against women."
+  },
+  {
+    "name": "Murder of Jamal Khashoggi",
+    "desc": "Journalist Jamal Khashoggi was killed inside the Saudi consulate in Istanbul. The case became a major international political and human-rights scandal."
+  },
+  {
+    "name": "Murder of Kim Wall",
+    "desc": "Journalist Kim Wall died after boarding a homemade submarine with inventor Peter Madsen. The bizarre circumstances made it one of Europe’s most widely reported murder cases."
+  },
+  {
+    "name": "Murder of Annie Le",
+    "desc": "Graduate student Annie Le was found dead inside a Yale laboratory building. The case drew attention because of its campus setting and proximity to her planned wedding."
+  },
+  {
+    "name": "Murder of Elisa Lam Context",
+    "desc": "Elisa Lam’s case became internet-famous because of eerie surveillance footage, though officials ruled her death accidental rather than homicide."
+  },
+  {
+    "name": "Murder of Grace Millane",
+    "desc": "British backpacker Grace Millane was murdered while traveling abroad. The case drew worldwide sympathy and scrutiny of dating-app-related risks."
+  },
+  {
+    "name": "Murder of George Floyd Context",
+    "desc": "George Floyd’s killing by a police officer became one of the most consequential homicide prosecutions in recent U.S. history, fueling worldwide protests."
+  },
+  {
+    "name": "Murder of Ahmaud Arbery",
+    "desc": "Ahmaud Arbery was chased and shot while running. The case became a national flashpoint over racism, vigilantism, and prosecutorial delay."
+  },
+  {
+    "name": "Murder of Stephen Lawrence",
+    "desc": "Teenager Stephen Lawrence was killed in a racist attack. The case transformed British discussions of institutional racism and policing."
+  },
+  {
+    "name": "Murder of Emmett Till",
+    "desc": "Fourteen-year-old Emmett Till was murdered in a racist killing that helped galvanize the U.S. civil-rights movement."
+  },
+  {
+    "name": "Murder of Medgar Evers",
+    "desc": "Civil-rights leader Medgar Evers was assassinated outside his home. The case became a long-running test of justice delayed in the American South."
+  },
+  {
+    "name": "Murder of Trayvon Martin Context",
+    "desc": "Trayvon Martin’s shooting and the trial that followed reshaped national conversations about race, self-defense law, and civil protest."
+  },
+  {
+    "name": "Murder of Sharon Tate and Cielo Drive victims",
+    "desc": "The murders at Cielo Drive became the central act of the Manson case and one of Hollywood’s most notorious crime scenes."
+  },
+  {
+    "name": "Murder of Sharon Kinne-linked Cases",
+    "desc": "Sharon Kinne was tied to multiple suspicious deaths and disappearances and became known as ‘La Pistolera,’ one of North America’s most elusive female murder figures."
+  },
+  {
+    "name": "The Chicago Ripper Crew Murders",
+    "desc": "A group of killers carried out a series of murders marked by ritualistic violence. The case remains infamous for its brutality and cult-like elements."
+  },
+  {
+    "name": "The Hillside Stranglers Case",
+    "desc": "Cousins Kenneth Bianchi and Angelo Buono murdered multiple girls and women around Los Angeles. The case shocked the city already haunted by other serial killings."
+  },
+  {
+    "name": "Ted Bundy Murders",
+    "desc": "Ted Bundy killed numerous young women across several states. His intelligence, manipulation, and courtroom theatrics made the case extraordinarily notorious."
+  },
+  {
+    "name": "John Wayne Gacy Murders",
+    "desc": "Gacy murdered dozens of boys and young men, many buried beneath his house. The discovery of the bodies made the case one of the most infamous in U.S. history."
+  },
+  {
+    "name": "Jeffrey Dahmer Murders",
+    "desc": "Dahmer killed and dismembered multiple young men and boys. The case became a grim study in predation, missed opportunities, and police failure."
+  },
+  {
+    "name": "Ed Gein Case",
+    "desc": "Though responsible for fewer confirmed murders than many assume, Ed Gein’s crimes had enormous cultural impact, inspiring major horror characters and films."
+  },
+  {
+    "name": "The Co-Ed Killer Murders",
+    "desc": "Edmund Kemper murdered young women and members of his own family. The case remains central in criminal-behavior studies because of Kemper’s interviews and insight."
+  },
+  {
+    "name": "The Dating Game Killer Murders",
+    "desc": "Rodney Alcala committed multiple murders and appeared on a television dating show. His public persona versus hidden violence made the case especially disturbing."
+  },
+  {
+    "name": "Son of Sam Murders",
+    "desc": "David Berkowitz’s shootings spread panic through New York City. Taunting letters and media frenzy turned the case into a defining urban serial-killer story."
+  },
+  {
+    "name": "The Grim Sleeper Murders",
+    "desc": "Lonnie Franklin Jr. was linked to a long series of murders in South Los Angeles. The case drew criticism over how killings of marginalized women were neglected."
+  },
+  {
+    "name": "The Happy Face Killer Murders",
+    "desc": "Keith Hunter Jesperson murdered multiple women and signed messages with a smiley face. The branding of the case helped cement its place in modern true crime."
+  },
+  {
+    "name": "The Toolbox Killers Case",
+    "desc": "Lawrence Bittaker and Roy Norris abducted, tortured, and murdered teenage girls. The case is infamous for the evidence recovered and its extreme cruelty."
+  },
+  {
+    "name": "The Toy-Box Killer-linked Murders",
+    "desc": "David Parker Ray is more often tied to torture and suspected killings than fully proven murder counts, but the case remains one of the darkest in American criminal lore."
+  },
+  {
+    "name": "The Ken and Barbie Killers",
+    "desc": "Paul Bernardo and Karla Homolka committed sexual assaults and murders that horrified Canada and raised intense controversy over plea deals."
+  },
+  {
+    "name": "The Bernardo Schoolgirl Murders",
+    "desc": "Linked to Paul Bernardo, the murders of Leslie Mahaffy and Kristen French became defining Canadian true-crime cases."
+  },
+  {
+    "name": "The Pickton Farm Murders",
+    "desc": "Robert Pickton was convicted in multiple murders of women from Vancouver’s Downtown Eastside. The case exposed failures in protecting vulnerable communities."
+  },
+  {
+    "name": "The Port Arthur Massacre",
+    "desc": "Martin Bryant killed 35 people in Australia’s deadliest modern mass murder. The case led directly to sweeping gun-law reform."
+  },
+  {
+    "name": "The Christchurch Mosque Murders",
+    "desc": "A mass shooting at two mosques killed 51 people. The case became globally significant for anti-extremism policy and online radicalization debates."
+  },
+  {
+    "name": "Anders Breivik Murders",
+    "desc": "Breivik bombed Oslo and murdered dozens of young people on Utøya. The attacks remain one of the deadliest acts of far-right mass murder in modern Europe."
+  },
+  {
+    "name": "The Oslo and Utøya Case",
+    "desc": "Often treated as the same event as Breivik’s attacks, this combined bombing-and-shooting case reshaped Europe’s discussion of extremism and domestic terror homicide."
+  },
+  {
+    "name": "Murder of Kim Jong-nam",
+    "desc": "Kim Jong-nam, half-brother of North Korea’s leader, was killed with VX nerve agent in an airport. The case combined assassination, espionage, and bizarre public footage."
+  },
+  {
+    "name": "Murder of Daphne Caruana Galizia",
+    "desc": "The investigative journalist was killed in a car bombing. Her murder became a major European case about corruption, press freedom, and state accountability."
+  },
+  {
+    "name": "Idaho Student Murders",
+    "desc": "Four University of Idaho students were killed in an off-campus home, creating one of the most watched U.S. murder investigations of the decade."
+  }
+];
+
+const PHILOSOPHY_BOOKS=[{"title": "The King in Yellow", "desc": "A proto-weird text where forbidden art, decay, and unstable reality blur into cosmic dread. It fits your taste for psychological horror that feels older than reason.", "tags": ["cosmic horror", "decay", "unreality"]}, {"title": "Crime and Punishment", "desc": "A study of guilt, self-justification, and moral collapse. Less about the murder itself than the mind trying to out-argue its own conscience.", "tags": ["guilt", "morality", "obsession"]}, {"title": "No Longer Human", "desc": "Identity collapse told through shame, alienation, and social masking. It reads like a slow-motion disintegration of the self.", "tags": ["identity", "alienation", "shame"]}, {"title": "The Metamorphosis", "desc": "Absurd transformation as existential terror. Kafka turns dehumanization into something intimate, humiliating, and impossible to escape.", "tags": ["absurdism", "alienation", "body horror"]}, {"title": "The Stranger", "desc": "A cold examination of detachment, meaning, and the friction between inner emptiness and society’s moral expectations.", "tags": ["existentialism", "detachment", "meaning"]}, {"title": "White Nights", "desc": "Loneliness wrapped in tenderness and illusion. It’s less about romance than projection, longing, and the fragile architecture of hope.", "tags": ["loneliness", "illusion", "longing"]}, {"title": "Notes from Underground", "desc": "Hyper self-awareness weaponized into bitterness. A foundational text for resentment, self-sabotage, and the mind turning against itself.", "tags": ["resentment", "self-sabotage", "interiority"]}, {"title": "The Trial", "desc": "Existential nightmare through systemized judgment. The horror is not violence, but being condemned by a structure that never explains itself.", "tags": ["bureaucracy", "absurdity", "power"]}, {"title": "The Bell Jar", "desc": "A precise portrait of mental fragmentation and psychic suffocation. It captures collapse from the inside without romanticizing it.", "tags": ["mental fracture", "pressure", "interiority"]}, {"title": "House of Leaves", "desc": "Reality distortion, obsession, and layered unreliability. It feels engineered to make the reader doubt the architecture of the story itself.", "tags": ["obsession", "distortion", "labyrinth"]}, {"title": "The Brothers Karamazov", "desc": "A massive collision of philosophy, crime, faith, and morality. It widens the same questions as Crime and Punishment into a whole family of contradictions.", "tags": ["faith", "crime", "morality"]}, {"title": "The Road", "desc": "Minimalist existential devastation. Meaning is reduced to movement, survival, and what remains of tenderness in a dead world.", "tags": ["emptiness", "survival", "meaning"]}];
+const PSYCH_FILES=[{"title": "Mindhunter", "desc": "A procedural look at profiling, interview strategy, and the behavioral signatures killers leave behind. It grounds the section in real investigative logic.", "tags": ["profiling", "interviews", "victimology"]}, {"title": "American Psycho", "desc": "An internal monologue of performance, narcissism, violence, and emotional vacancy. Useful less as realism, more as a study in masking and detachment.", "tags": ["masking", "narcissism", "detachment"]}, {"title": "In the Miso Soup", "desc": "Slow-burn discomfort built on intuition, danger, and the feeling that something is wrong long before it becomes visible. A great text for predatory ambiguity.", "tags": ["predation", "unease", "ambiguity"]}, {"title": "Crime and Punishment", "desc": "Keeps mattering here because criminal psychology is not just motive, but what happens after the act—rationalization, guilt, and psychic disintegration.", "tags": ["guilt", "rationalization", "aftershock"]}, {"title": "Notes from Underground", "desc": "Not a crime manual, but a blueprint for contradiction, ego defense, resentment, and the kind of inner spiral that makes destructive behavior legible.", "tags": ["ego defense", "resentment", "compulsion"]}, {"title": "No Longer Human", "desc": "Essential for social masking and collapse. It helps frame how alienation, self-disgust, and performance can warp outward behavior.", "tags": ["masking", "shame", "identity"]}];
+const PSYCH_LENSES=[{"title": "Offender Mask", "desc": "How normalcy is performed: charm, humor, status, routine, and curated language hiding deviation underneath."}, {"title": "Motive vs Story", "desc": "The reason people give is rarely the real reason. The story is usually cover; the pattern is usually truth."}, {"title": "Guilt Signature", "desc": "Some people confess, some distort, some over-explain. Guilt has behavioral texture before it has language."}, {"title": "Predatory Patience", "desc": "A lot of dangerous behavior is not impulsive at all. It waits, studies, adapts, and enters through familiarity."}, {"title": "Environmental Pressure", "desc": "Context matters: humiliation, isolation, status threat, fantasy reinforcement, and grievance loops all shape action."}, {"title": "Narrative Fracture", "desc": "The places where someone’s self-story breaks—contradictions, missing affect, odd detail emphasis—usually matter most."}];
+const PSYCH_FOCUS=["profiling", "motive mapping", "interview dynamics", "guilt patterns", "masking", "offender narrative"];
+const GAMES=[{"title": "Ironsight", "genre": "Shooter", "note": "Fast modern arena FPS with near-future loadouts."}, {"title": "War Thunder", "genre": "Vehicular Combat", "note": "Combined-arms military sim built around tanks, planes, and grind."}, {"title": "7 Days to Die", "genre": "Survival", "note": "Zombie survival crafting loop with base-defense pressure."}, {"title": "Aimlabs", "genre": "Training", "note": "Aim trainer for flicks, tracking, and reaction speed."}, {"title": "Apex Legends", "genre": "Shooter", "note": "Squad hero battle royale with mobility and fast rotations."}, {"title": "ARK: Survival Evolved", "genre": "Survival", "note": "Dinosaur taming survival sandbox with brutal progression."}, {"title": "ARK: Survival Of The Fittest", "genre": "Survival", "note": "Competitive ARK spin on battle-royale survival."}, {"title": "Batman: Arkham Asylum GOTY Edition", "genre": "Action", "note": "Tight combat and gothic asylum detective atmosphere."}, {"title": "Batman: Arkham City GOTY", "genre": "Action", "note": "Open-city predator stealth and combat escalation."}, {"title": "Batman: Arkham Knight", "genre": "Action", "note": "Darker finale with Batmobile-heavy urban combat."}, {"title": "Black Myth: Wukong", "genre": "Action RPG", "note": "Mythic boss-focused action rooted in Journey to the West."}, {"title": "Call of Juarez Gunslinger", "genre": "Shooter", "note": "Arcade western shooter with stylized narration."}, {"title": "Canyon Capers", "genre": "Platformer", "note": "Light indie platforming and coin-chasing energy."}, {"title": "Chained Together", "genre": "Co-op", "note": "Physics platformer where one mistake drags everyone down."}, {"title": "Company of Heroes 2", "genre": "Strategy", "note": "Tactical WWII RTS with squad positioning and pressure."}, {"title": "Conan Exiles", "genre": "Survival", "note": "Brutal open-world survival with building and clan progression."}, {"title": "Conan Exiles - Public Beta Client", "genre": "Survival", "note": "Test branch for upcoming Conan systems."}, {"title": "Control Ultimate Edition", "genre": "Action", "note": "Surreal bureau shooter with telekinetic combat."}, {"title": "Counter-Strike 2", "genre": "Shooter", "note": "Precision tac shooter built around economy and angles."}, {"title": "Crab Game", "genre": "Party", "note": "Chaotic social-survival minigame parody energy."}, {"title": "Cyber Hunter", "genre": "Shooter", "note": "Sci-fi battle royale with traversal gadgets and speed."}, {"title": "Days Gone", "genre": "Action", "note": "Biker survival journey against huge freaker hordes."}, {"title": "Dear Esther: Landmark Edition", "genre": "Narrative", "note": "Atmospheric walking sim built on mood and voice."}, {"title": "Destiny 2", "genre": "MMO Shooter", "note": "Loot-driven sci-fi FPS/MMO with raids and buildcraft."}, {"title": "Devil May Cry 5", "genre": "Action", "note": "Stylish character-action combat with combo expression."}, {"title": "Doki Doki Literature Club", "genre": "Horror", "note": "Meta visual novel that weaponizes expectation and discomfort."}, {"title": "Dungeon of the ENDLESS", "genre": "Strategy", "note": "Roguelike dungeon defense with resource juggling."}, {"title": "Dying Light", "genre": "Survival Horror", "note": "Parkour zombie survival with day-night tension."}, {"title": "Dying Light 2: Reloaded Edition", "genre": "Survival Horror", "note": "Open-world parkour sequel with faction pressure."}, {"title": "ELDEN RING", "genre": "RPG", "note": "Vast open-world soulslike built on discovery and punishment."}, {"title": "ELDEN RING NIGHTREIGN", "genre": "Action RPG", "note": "High-pressure Elden Ring spin focused on group momentum."}, {"title": "The Elder Scrolls V: Skyrim Special Edition", "genre": "RPG", "note": "Open fantasy sandbox for quests, exploration, and identity-building."}, {"title": "Enshrouded", "genre": "Survival", "note": "Fantasy survival crafting with fog-covered exploration."}, {"title": "Euro Truck Simulator 2", "genre": "Sim", "note": "Long-haul trucking sim built on calm repetition."}, {"title": "FINAL FANTASY XV WINDOWS EDITION", "genre": "RPG", "note": "Road-trip action JRPG with spectacle and brotherhood."}, {"title": "The First Berserker: Khazan", "genre": "Action", "note": "Brutal anime-styled action focused on bosses and precision."}, {"title": "For Honor - Public Test", "genre": "Fighting", "note": "Test environment for weapon-duel balance changes."}, {"title": "Ghost of Tsushima DIRECTOR'S CUT", "genre": "Action", "note": "Cinematic samurai combat and open-world elegance."}, {"title": "God of War", "genre": "Action", "note": "Mythic father-son action with weighty close combat."}, {"title": "God of War Ragnarök", "genre": "Action", "note": "Larger mythic continuation with broader combat and emotion."}, {"title": "GWENT: The Witcher Card Game", "genre": "Card Game", "note": "Round-based Witcher card duels built on bluffing tempo."}, {"title": "Half-Life 2", "genre": "Shooter", "note": "Landmark narrative FPS driven by pacing and physics."}, {"title": "Half-Life 2: Deathmatch", "genre": "Shooter", "note": "Classic Source multiplayer chaos."}, {"title": "Half-Life Deathmatch: Source", "genre": "Shooter", "note": "Remastered arena combat from the original Half-Life."}, {"title": "HELLDIVERS™ 2", "genre": "Shooter", "note": "Co-op extraction war built on friendly-fire chaos."}, {"title": "HITMAN™ 2", "genre": "Stealth", "note": "Sandbox assassination built around patience and improvisation."}, {"title": "Hogwarts Legacy", "genre": "RPG", "note": "Wizarding open-world action and school-fantasy immersion."}, {"title": "Horizon Forbidden West™ Complete Edition", "genre": "Action", "note": "Lush sci-fi action with machines and exploration."}, {"title": "Injustice: Gods Among Us Ultimate Edition", "genre": "Fighting", "note": "DC fighter built on spectacle and matchup knowledge."}, {"title": "Islands of Insight", "genre": "Puzzle", "note": "Serene shared-world puzzle exploration and pattern solving."}, {"title": "Just Cause 3", "genre": "Action", "note": "Explosive open-world sandbox built for reckless freedom."}, {"title": "Just Ignore Them", "genre": "Horror", "note": "Indie narrative horror with point-and-click tension."}, {"title": "Kingdom Come: Deliverance", "genre": "RPG", "note": "Grounded medieval RPG obsessed with realism and immersion."}, {"title": "Kingdom Come: Deliverance II", "genre": "RPG", "note": "Expanded medieval continuation with deeper systemic roleplay."}, {"title": "The Last of Us™ Part II Remastered", "genre": "Action", "note": "Brutal stealth-action built around revenge and consequence."}, {"title": "Left 4 Dead 2", "genre": "Shooter", "note": "Co-op zombie FPS with endlessly replayable pressure."}, {"title": "Lies of P", "genre": "Action RPG", "note": "Bleak soulslike retelling with tight parry timing."}, {"title": "Mad Max", "genre": "Action", "note": "Wasteland car combat and survival scavenging."}, {"title": "Mage Arena", "genre": "Arena", "note": "Spell-slinging fantasy arena chaos."}, {"title": "Maneater", "genre": "Action", "note": "Shark power-fantasy with absurd open-water violence."}, {"title": "Metro Exodus", "genre": "Shooter", "note": "Post-apocalyptic FPS blending survival and story."}, {"title": "Metro Exodus Enhanced Edition", "genre": "Shooter", "note": "Visually upgraded Exodus with the same harsh survival tone."}, {"title": "Next Up Hero", "genre": "Action", "note": "Colorful co-op brawler with hero afterimages."}, {"title": "Once Human", "genre": "Survival", "note": "Online survival world warped by cosmic contamination."}, {"title": "Palworld", "genre": "Survival", "note": "Creature collection mixed with base-building and automation."}, {"title": "PAYDAY 2", "genre": "Shooter", "note": "Co-op heist FPS built around roles, stealth, and loud chaos."}, {"title": "Phantasy Star Online 2 New Genesis", "genre": "MMO", "note": "Anime action MMO with flashy combat loops."}, {"title": "Phasmophobia", "genre": "Horror", "note": "Co-op ghost investigation powered by fear and voice."}, {"title": "Project Playtime", "genre": "Horror", "note": "Asymmetrical mascot-horror multiplayer."}, {"title": "PUBG: BATTLEGROUNDS", "genre": "Shooter", "note": "High-stakes battle royale built on positioning and tension."}, {"title": "PUBG: Experimental Server", "genre": "Shooter", "note": "Test branch for upcoming PUBG changes."}, {"title": "PUBG: Test Server", "genre": "Shooter", "note": "Separate environment for staged PUBG updates."}, {"title": "Raji: An Ancient Epic", "genre": "Action", "note": "Mythic Indian action-adventure with striking art direction."}, {"title": "Remnant: From the Ashes", "genre": "Shooter", "note": "Co-op soulslike shooter with world variety."}, {"title": "Remnant II", "genre": "Shooter", "note": "Bigger sequel mixing gunplay, builds, and boss design."}, {"title": "Resident Evil 2", "genre": "Horror", "note": "Remake survival horror built on dread and resource pressure."}, {"title": "Resident Evil 3", "genre": "Horror", "note": "Faster survival horror with relentless pursuit energy."}, {"title": "Resident Evil 4", "genre": "Horror Action", "note": "Action-horror reinvention with incredible pacing."}, {"title": "Resident Evil 4 (2005)", "genre": "Horror Action", "note": "The original classic that redefined over-the-shoulder action."}, {"title": "Resident Evil 7 Biohazard", "genre": "Horror", "note": "First-person horror return to claustrophobic terror."}, {"title": "Resident Evil Requiem", "genre": "Horror", "note": "New Resident Evil slot already queued in the library."}, {"title": "RESIDENT EVIL RESISTANCE", "genre": "Multiplayer Horror", "note": "Asymmetrical survival experiment in the RE universe."}, {"title": "Resident Evil Re:Verse", "genre": "Multiplayer Horror", "note": "Online deathmatch spin on Resident Evil characters."}, {"title": "Resident Evil Village", "genre": "Horror", "note": "Gothic action-horror balancing dread and spectacle."}, {"title": "Road to Vostok", "genre": "Survival", "note": "Harsh single-player survival sandbox with frontier tension."}, {"title": "Satisfactory", "genre": "Sandbox", "note": "Factory optimization and first-person automation obsession."}, {"title": "Sea of Thieves", "genre": "Adventure", "note": "Social pirate sandbox driven by emergent stories."}, {"title": "Sekiro™: Shadows Die Twice", "genre": "Action", "note": "Razor-sharp sword duels built on posture and aggression."}, {"title": "SILENT HILL 2", "genre": "Horror", "note": "Psychological horror steeped in grief and symbolism."}, {"title": "Stellar Blade™", "genre": "Action", "note": "Flashy sci-fi action with precision combat."}, {"title": "Stranded Deep", "genre": "Survival", "note": "Island survival with crafting and isolation."}, {"title": "TEKKEN 7", "genre": "Fighting", "note": "Legacy 3D fighter driven by execution and matchup knowledge."}, {"title": "Tom Clancy's The Division PTS", "genre": "Shooter", "note": "Test server for looter-shooter balance passes."}, {"title": "UNCHARTED™: Legacy of Thieves Collection", "genre": "Action", "note": "Cinematic treasure-hunt action and traversal."}, {"title": "Warframe", "genre": "MMO Shooter", "note": "Hyper-mobile looter shooter with endless build depth."}, {"title": "Warhammer: Vermintide 2", "genre": "Action", "note": "Co-op melee horde combat with class synergy."}, {"title": "Wednesdays", "genre": "Indie", "note": "Backlog oddity with enough mystery to stay interesting."}, {"title": "Where Winds Meet", "genre": "RPG", "note": "Wuxia open-world journey built on martial-arts fantasy."}, {"title": "Windrose", "genre": "Indie", "note": "Backlog entry carrying a rougher indie fantasy vibe."}, {"title": "The Witcher: Enhanced Edition", "genre": "RPG", "note": "Foundational dark-fantasy RPG full of rough edges and choice."}, {"title": "The Witcher 3: Wild Hunt", "genre": "RPG", "note": "Benchmark open-world RPG built on quest writing and atmosphere."}, {"title": "XCOM: Enemy Unknown", "genre": "Strategy", "note": "Turn-based tactical war against alien escalation."}];
+
+const ACTIVE_MODULES=[
+  {kicker:"Build",title:"AI Systems",desc:"Voice assistants, local agents, text analysis systems, and product ideas that need more than just model calls."},
+  {kicker:"Defend",title:"Cybersecurity",desc:"Threat modeling, deception systems, network behavior, and the defensive side of understanding how systems fail."},
+  {kicker:"Design",title:"Software Architecture",desc:"Breaking a vague idea into components, flows, interfaces, and something that can actually be built."},
+  {kicker:"Ship",title:"Frontend + UX",desc:"Making technical projects look intentional, readable, and strong enough to explain themselves the first time."},
+  {kicker:"Study",title:"Research Workflows",desc:"Going deep into a topic, pulling structure out of it, and turning scattered information into something coherent."},
+  {kicker:"Refine",title:"Systems Thinking",desc:"Looking at moving parts, dependencies, bottlenecks, and leverage points instead of just isolated features."}
+];
+
+const HOBBIES=[
+  {icon:"📚",title:"Reading Books",desc:"Psychological horror, philosophy, crime, and books that leave a residue after you finish them.",tag:"deep reading",intro:"I do not read just to complete a list. I read to stay inside a mind long enough to understand how it is built, where it bends, and what it reveals when pressure starts building.",doing:"Most of my reading time goes into psychological horror, philosophy, criminal psychology, and novels with strong internal collapse or moral conflict. I like books that feel mentally dense — the kind that make you stop, think, reread, and connect patterns across completely different authors.",why:"Reading is one of the few things that gives me both calm and intensity at the same time. A good book does not just tell a story — it changes the lens through which I look at behavior, motive, isolation, guilt, obsession, and control.",lane:"Dostoevsky, Camus, Kafka, Osamu Dazai, strange horror, true crime, and books that sit somewhere between philosophy and breakdown.",flow:"Time disappears when a book has a voice strong enough that the world around me stops mattering and I start mentally mapping every idea, motive, contradiction, and shift in tone."},
+  {icon:"🎮",title:"Playing Games",desc:"Worlds I can sink into for systems, difficulty, atmosphere, and clean mechanics.",tag:"interactive systems",intro:"I do not play everything the same way. Some games are for challenge, some are for atmosphere, some are for system depth, and some are just there because the world feels too good to leave.",doing:"I gravitate toward games with demanding combat, strong progression systems, good worldbuilding, or pressure-heavy decision making. Soulslikes, action RPGs, shooters, co-op survival, and anything with a strong gameplay loop usually keep me locked in for hours.",why:"Games are one of the clearest forms of systems in motion. They reward adaptation, pattern recognition, timing, persistence, and learning through failure — all things I naturally enjoy.",lane:"Elden Ring, Sekiro, Destiny 2, Warframe, Resident Evil, Helldivers 2, Witcher 3, Kingdom Come, Silent Hill, and games that either test me or absorb me.",flow:"Time disappears when I am deep in a fight loop, optimizing a build, learning a boss pattern, or exploring a world that feels like it was built with actual intent."},
+  {icon:"🛠️",title:"Building Stuff",desc:"Turning half-formed ideas into systems, prototypes, pages, tools, and experiments.",tag:"maker mode",intro:"Even outside formal projects, I naturally drift toward making things. If an idea has structure, I want to see how far it can be pushed into something real.",doing:"That can mean a portfolio feature, a local AI workflow, a mock interface, a threat-analysis concept, a system map, or even just sketching out how a product should behave before any code exists. I like the design stage as much as the implementation stage.",why:"Building is the fastest way for me to think clearly. Once an idea starts becoming a system with pieces, priorities, and tradeoffs, it becomes easier to understand and easier to improve.",lane:"Browser demos, AI assistants, security concepts, UI ideas, system architecture notes, and experiments that sit somewhere between product and obsession.",flow:"Time disappears when I get into that state where every new decision makes the next five decisions clearer and I can feel the whole structure locking into place."},
+  {icon:"🥋",title:"Martial Arts",desc:"The one hobby that clears my head by forcing complete presence.",tag:"discipline",intro:"Martial arts is probably the cleanest form of focus I have. When I am training, there is no extra noise — only timing, movement, control, and pressure.",doing:"I like the discipline of repeated drills, sharpening technique, pushing conditioning, and seeing progress show up in reactions and composure rather than just appearance. The physical side matters, but the mental side is what keeps me attached to it.",why:"It gives structure to aggression, sharpens discipline, and teaches a kind of honesty that is hard to fake. Either your timing, balance, and control are there or they are not.",lane:"Karate, striking work, discipline-heavy training, conditioning, and the parts of combat sports that reward composure over chaos.",flow:"Time disappears when a session gets hard enough that thought falls away and everything narrows down to movement, distance, breathing, and reaction."},
+  {icon:"☕",title:"Coffee",desc:"Less a drink, more a setting for thinking, reading, and long work sessions.",tag:"ritual",intro:"Coffee is weirdly tied to how I like to work. It is not just taste — it is the atmosphere around it: quiet, focus, screens open, a book nearby, and something I am trying to understand.",doing:"I like having coffee while reading, researching, coding, or sitting with a problem long enough for the shape of it to become obvious. It turns normal time into workbench time.",why:"Some things become habits because they help your mind settle into a certain mode. Coffee does that for me. It makes deep work feel cleaner and longer.",lane:"Dark, simple, not overloaded — mostly there to anchor the mood rather than become the whole event.",flow:"Time disappears when I have coffee, a screen full of tabs, something difficult to solve, and enough uninterrupted space to stay with it."},
+  {icon:"⚡",title:"Monster Energy",desc:"The oddly specific drink attached to late sessions, gaming, and long streaks of focus.",tag:"fuel",intro:"Monster is not even something I try to make look deep — it is just one of those things that ended up becoming part of the environment around my long sessions.",doing:"It usually shows up during gaming marathons, night work, heavy research stretches, or whenever I know I am about to sit with something for a while. It is less about a random drink and more about the vibe attached to it.",why:"Certain habits become markers for specific states of mind. Monster ended up becoming one of those for me — not because it is profound, just because it fits the way I like to lock in.",lane:"Cold can, long session, something intense on screen, and enough time to disappear into it.",flow:"Time disappears when I am deep into a game, a system build, or some rabbit hole of research and I have fully stopped paying attention to the clock."},
+  {icon:"🔎",title:"Researching Random Stuff",desc:"The habit of opening one question and ending up ten layers deeper than I expected.",tag:"rabbit holes",intro:"This is probably the most naturally me hobby on the list. I can start with something small and suddenly be deep into the physics of lightning, black holes, psychological theories, strange crimes, military history, or whatever else happened to catch my attention.",doing:"I like following a topic until the simple explanation runs out. Once the surface answer is gone, that is when it actually gets interesting. That is usually where I start wanting diagrams, edge cases, and a better model of how the thing really works.",why:"Random research keeps my mind alive. It lets curiosity stay raw without needing a formal reason or output every time. Sometimes I end up with project ideas. Sometimes I just enjoy understanding something better than I did an hour ago.",lane:"Lightning physics, absurdly large cosmic structures, criminal cases, strange biological facts, internet rabbit holes, and questions most people would stop asking after the first answer.",flow:"Time disappears when one answer leads to another contradiction, then another search, then a model, then a realization that I have been fully gone for two hours over something I did not even plan to study."},
+  {icon:"📺",title:"Anime & Web Series",desc:"Mostly story-first, atmosphere-heavy stuff with strong tension, psychology, or worldbuilding.",tag:"story worlds",intro:"I like anime and series that feel like they were made with intention — strong atmosphere, distinct characters, moral conflict, tension, and enough psychological pull to stay with me after the episode ends.",doing:"I usually lean toward darker or more layered stories rather than disposable watching. Horror, thrillers, crime, mind-bending narratives, character collapse, and anything with a clean mood or world usually works on me.",why:"A good series gives a different kind of immersion than games or books. It is faster, more visual, and better at creating sustained mood. When it is done well, it sticks in the mind in a different way.",lane:"Psychological anime, crime-heavy series, dark web series, weird narrative structures, and stories that feel unsettling, sharp, or emotionally strange in the right way.",flow:"Time disappears when the atmosphere is strong enough that I stop feeling like I am watching and start feeling like I am inside the tone of it."}
+];
+
+// Render cases archive
+const casesTrack=document.getElementById('cases-track');
+const casesIndicator=document.getElementById('cases-indicator');
+let caseIndex=0;
+let visibleCases=3;
+
+function getVisibleCases(){
+  if(window.innerWidth<=640) return 1;
+  if(window.innerWidth<=900) return 2;
+  return 3;
+}
+function renderCasesArchive(){
+  visibleCases=getVisibleCases();
+  casesTrack.innerHTML=CASES.map((c,i)=>`
+    <div class="case-card" data-case="${i}">
+      <div class="case-card-title">${c.name}</div>
+    </div>`).join('');
+  updateCaseCarousel();
+}
+function updateCaseCarousel(){
+  const cards=[...document.querySelectorAll('.case-card')];
+  if(!cards.length) return;
+  const gap=16;
+  const cardWidth=cards[0].offsetWidth;
+  casesTrack.style.transform=`translateX(-${caseIndex*(cardWidth+gap)}px)`;
+  const start=caseIndex+1;
+  const end=Math.min(caseIndex+visibleCases, CASES.length);
+  casesIndicator.textContent=`${String(start).padStart(3,'0')}–${String(end).padStart(3,'0')} / ${CASES.length}`;
+  document.getElementById('cases-prev').disabled=caseIndex===0;
+  document.getElementById('cases-next').disabled=caseIndex>=CASES.length-visibleCases;
+}
+renderCasesArchive();
+window.addEventListener('resize',()=>{
+  visibleCases=getVisibleCases();
+  if(caseIndex>CASES.length-visibleCases) caseIndex=Math.max(0, CASES.length-visibleCases);
+  updateCaseCarousel();
+});
+document.getElementById('cases-prev').addEventListener('click',()=>{
+  caseIndex=Math.max(0, caseIndex-1);
+  updateCaseCarousel();
+});
+document.getElementById('cases-next').addEventListener('click',()=>{
+  caseIndex=Math.min(CASES.length-visibleCases, caseIndex+1);
+  updateCaseCarousel();
+});
+casesTrack.addEventListener('click',function(e){
+  const card=e.target.closest('.case-card');
+  if(!card) return;
+  openCaseModal(parseInt(card.dataset.case,10));
+});
+
+function openCaseModal(i){
+  const c=CASES[i];
+  document.getElementById('m-tag').textContent='// CASE STUDY';
+  document.getElementById('m-title').textContent=c.name;
+  document.getElementById('m-desc').textContent=c.desc;
+  document.getElementById('m-stack').innerHTML='<span class="tag tag-v">Behavior</span><span class="tag tag-v">Analysis</span><span class="tag tag-v">Case Study</span>';
+  document.getElementById('m-link').style.display='none';
+  document.getElementById('m-demo-link').style.display='none';
+  document.getElementById('modal-wrap').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.body.classList.add('modal-open');
+}
+
+// Concept note modal
+function openConceptNote(i){
+  const c=CONCEPTS[i];
+  document.getElementById('note-modal-title').textContent=c.title;
+  document.getElementById('note-modal-sub').textContent=`RESEARCH ENTRY // ${c.status}`;
+  const body=document.getElementById('note-modal-body');
+  body.innerHTML = `
+    <div class="note-sheet">
+      <div class="note-entry">// ${c.id}</div>
+      <div class="note-sheet-title">${c.title}</div>
+      <div class="note-sheet-tagline">${c.tagline}</div>
+      <div class="note-sheet-divider"></div>
+
+      <div class="note-section">
+        <div class="note-label">Core Idea</div>
+        <div class="note-text">${c.core}</div>
       </div>
 
-    </div>
-    
-  </section>
-		
-	<!-- section prices -->
-	<section id="pricing">
-
-		<div class="container">
-			
-			<!-- section title -->
-			<h2 class="section-title wow fadeIn" style="visibility: visible; animation-name: fadeIn;">Pricing Plans</h2>
-
-			<div class="spacer" data-height="60" style="height: 60px;"></div>
-			
-			<div class="row">
-				
-				<!-- price item -->
-				<div class="col-md-4 pr-md-0 mt-md-4 mt-0">
-					<div class="price-item bg-white rounded shadow-dark text-center">
-						<img src="svg/price-1.svg" alt="Regular">
-						<h2 class="plan">Basic Website</h2>
-						<p>Basic Informative Website </p>
-						<p>Pricing Starts From</p>
-						<h3 class="price"><em>$</em>100</h3>
-					</div>
-				</div>
-				<!-- end price item -->
-
-			</div>
-
-		</div>
-
-	</section>
-
-
-  <!-- section hobbies -->
-  <section>
-
-    <div class="container">
-      
-      <!-- section title -->
-      <h2 class="section-title wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">Hobbies</h2>
-
-      <div class="spacer" data-height="60" style="height: 60px;"></div>
-      
-      <div class="row">
-
-        <div class="col-md-6">
-          
-          <!-- hobbies wrapper -->
-          <div class=" edu bg-white rounded shadow-dark padding-30 overflow-hidden">
-
-            <!-- hobbies item -->
-            <div class="timeline-container wow fadeInUp" data-wow-delay="0.2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInUp;">
-              <div class="content">
-                <img src="swimming.png" style="width:40px;">
-                <h3 class="title" style="display: inline-block;">Swimming</h3>
-                <hr>
-              </div>
-            </div>
-            <!-- end hobbies item -->
-
-
-            <span class="line"></span>
-
-          </div>
-
-        </div>
-
+      <div class="note-section">
+        <div class="note-label">Key Concepts</div>
+        <div class="note-keychips">${c.keys.map(k=>`<span class="note-chip">${k}</span>`).join('')}</div>
       </div>
 
-    </div>
-    
-  </section>
-	
-	<!-- section funfacts -->
-	<section>
+      <div class="note-section">
+        <div class="note-label">Insight</div>
+        <div class="note-text">${c.insight}</div>
+      </div>
 
-		<div class="container">
-			
-			<!-- section title -->
-			<h2 class="section-title wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">Things I love the most</h2>
-
-			<div class="spacer" data-height="60" style="height: 60px;"></div>
-			
-			<!-- funfacts wrapper -->
-			<div class="testimonials-wrapper slick-initialized slick-slider slick-dotted" role="toolbar">
-				
-				<!-- funfacts item -->
-			<div aria-live="polite" class="slick-list draggable"><div class="slick-track" role="listbox" style="opacity: 1; width: 2800px; transform: translate3d(-700px, 0px, 0px);">
-
-        	 <div class="testimonial-item text-center mx-auto slick-slide slick-cloned" data-slick-index="-1" aria-hidden="true" tabindex="-1" style="width: 700px;">
-  			</div>
-
-      		 <div class="testimonial-item text-center mx-auto slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false" tabindex="-1" role="option" aria-describedby="slick-slide00" style="width: 700px;">
-				<div class="mb-3 mx-auto">
-
-					<img style="border-radius: 20px;" class="img-responsive" src="beach.jpg">						
-				</div>
-
-					<h4 class="mt-3 mb-0">Henderson Beach</h4>
-					
-					<div class="bg-white padding-30 shadow-dark rounded triangle-top position-relative mt-4">
-						<p class="mb-0">I love the beach. We are lucky to go several times a year to see my parents and sister, who live in Destin, Florida.</p>
-					</div>
-				</div>
-
-      </div></div>
-				
-				
-
-			</div>
+      <div class="note-section">
+        <div class="note-label">Applications</div>
+        <div class="note-text">${c.applications}</div>
+      </div>
+    </div>`;
+  document.getElementById('note-modal-wrap').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.body.classList.add('note-open');
+}
+function closeConceptNote(){
+  document.getElementById('note-modal-wrap').classList.remove('open');
+  document.body.style.overflow='';
+  document.body.classList.remove('note-open');
+}
+document.getElementById('note-close').addEventListener('click',closeConceptNote);
+document.getElementById('note-modal-wrap').addEventListener('click',function(e){
+  if(e.target===this) closeConceptNote();
+});
 
 
-		</div>
+// Render active modules
+document.getElementById('module-grid').innerHTML=ACTIVE_MODULES.map((m,i)=>`
+  <div class="module-card reveal" style="transition-delay:${i*.05}s">
+    <div class="module-kicker">${m.kicker}</div>
+    <div class="module-title">${m.title}</div>
+    <div class="module-desc">${m.desc}</div>
+  </div>`).join('');
 
-	</section>
-	
-  
-	<!-- section contact -->
-	<section id="contact" style="background: #353353;padding: 15px;">
-
-		<div class="container">
-			
-			<!-- section title -->
-			<h2 class="section-title wow fadeInUp" style="margin-left:0px;color: white;visibility: visible; animation-name: fadeInUp;">Get In Touch</h2>
-
-			
-			<div class="row">
-				
-				<div class="col-md-8">
-
-					<h3 class="wow fadeInUp" style="color: white;visibility: visible; animation-name: fadeInUp;">Victor Cardoz</h3>
-				    <hr style="border: 0.5px solid white;">
-					<img src="me.png" style="display: inline-block; width: 100px;border-radius: 100px" class="mb-4">
-            		<p style="margin: 5px; color: white; display: inline-block;">Please free feel to contact me on my social handles</p>
-
-				</div>
-
-				<div class="col-md-4">
-
-  				    <h3 class="wow fadeInUp" style="color: white;visibility: visible; animation-name: fadeInUp;">FOLLOW ME</h3>
-   					<hr style="border: 0.5px solid white;">
-      				<p style="color: white;">Let us be social</p>
-
-				    <a href="#">
-				      <img src="instagram.png" style="width: 40px;margin: 5px">
-				    </a>
-				</div>
-
-			</div>
-
-		</div>
-
-	</section>
-
-	
-</main>
-
-<!-- Go to top button -->
-<a href="javascript:" id="return-to-top" style="display: none;">
-  <img src="go_to_top.png">
-</a>
-
-<!-- modal -->
-<div id="myModal" class="modal fade ">
-    <div class="modal-dialog" >
-          <!-- Modal content-->
-        <div class="modal-content">
-      
-            <button class="close" data-dismiss="modal" style="text-align: right;padding: 10px;">&times;</button>
-            <hr>
-            <div class="modal-body">
-              <p>Welcome to the ml5 project! Developing ml5 is not just about developing machine learning software, it is about making machine learning approachable for a broad audience of artists, creative coders, and students. The library provides access to machine learning algorithms and models in the browser, building on top of TensorFlow.js with no other external dependencies.The library is supported by code examples, tutorials, and sample datasets with an emphasis on ethical computing. Bias in data, stereotypical harms, and responsible crowdsourcing are part of the documentation around data collection and usage. We're building friendly machine learning for the web - we're glad you're here! ml5.js is heavily inspired by Processing and p5.js.</p>
-             </div>
-
-        </div>
-    </div>
- </div>
- <!-- end modal -->
-
-<!-- SCRIPTS -->
-<script src="js/jquery-1.12.3.min.js"></script>
-<script src="js/jquery.easing.min.js"></script>
-<script src="js/jquery.waypoints.min.js"></script>
-<script src="js/jquery.counterup.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/isotope.pkgd.min.js"></script>
-<script src="js/infinite-scroll.min.js"></script>
-<script src="js/imagesloaded.pkgd.min.js"></script>
-<script src="js/slick.min.js"></script>
-<script src="js/contact.js"></script>
-<script src="js/validator.js"></script>
-<script src="js/wow.min.js"></script>
-<script src="js/morphext.min.js"></script>
-<script src="js/parallax.min.js"></script>
-<script src="js/jquery.magnific-popup.min.js"></script>
-
-<script src="js/custom.js"></script>
-
-      
+// Render hobbies
+document.getElementById('hobby-grid').innerHTML=HOBBIES.map((h,i)=>`
+  <div class="hobby-card reveal" data-hobby="${i}" style="transition-delay:${i*.05}s">
+    <span class="hobby-icon">${h.icon}</span>
+    <div class="hobby-title">${h.title}</div>
+    <div class="hobby-desc">${h.desc}</div>
+    <div class="hobby-meta">click to open</div>
+  </div>`).join('');
 
 
+function openHobbyModal(i){
+  const h=HOBBIES[i];
+  document.getElementById('hobby-modal-tag').textContent=h.tag.toUpperCase();
+  document.getElementById('hobby-modal-title').textContent=h.title;
+  document.getElementById('hobby-modal-intro').textContent=h.intro;
+  document.getElementById('hobby-modal-do').textContent=h.doing;
+  document.getElementById('hobby-modal-why').textContent=h.why;
+  document.getElementById('hobby-modal-lane').textContent=h.lane;
+  document.getElementById('hobby-modal-flow').textContent=h.flow;
+  document.getElementById('hobby-modal-wrap').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.body.classList.add('modal-open');
+}
+function closeHobbyModal(){
+  document.getElementById('hobby-modal-wrap').classList.remove('open');
+  document.body.style.overflow='';
+  document.body.classList.remove('modal-open');
+}
+document.getElementById('hobby-modal-close').addEventListener('click',closeHobbyModal);
+document.getElementById('hobby-modal-wrap').addEventListener('click',function(e){
+  if(e.target===this) closeHobbyModal();
+});
+document.getElementById('hobby-grid').addEventListener('click',function(e){
+  const card=e.target.closest('.hobby-card');
+  if(card) openHobbyModal(parseInt(card.dataset.hobby));
+});
+
+
+// Render philosophy section
+const philoMetricsEl=document.getElementById('philo-metrics');
+const philosophyGridEl=document.getElementById('philosophy-grid');
+const uniquePhiloTags=[...new Set(PHILOSOPHY_BOOKS.flatMap(b=>b.tags))];
+philoMetricsEl.innerHTML=`
+  <div class="study-metric reveal"><div class="book-num">${PHILOSOPHY_BOOKS.length}</div><div class="book-lbl">Books Read</div></div>
+  <div class="study-metric reveal"><div class="book-num">${uniquePhiloTags.length}</div><div class="book-lbl">Core Themes</div></div>
+  <div class="study-metric reveal"><div class="book-num">${PHILOSOPHY_BOOKS.filter(b=>b.tags.includes('existentialism') || b.tags.includes('absurdity') || b.tags.includes('meaning')).length}</div><div class="book-lbl">Existential Works</div></div>
+`;
+philosophyGridEl.innerHTML=PHILOSOPHY_BOOKS.map((b,i)=>`
+  <article class="study-card reveal" style="transition-delay:${i*.03}s">
+    <div class="archive-kicker">// Book ${String(i+1).padStart(2,'0')}</div>
+    <div class="archive-title">${b.title}</div>
+    <p class="archive-copy">${b.desc}</p>
+    <div class="tag-row">${b.tags.map(tag=>`<span class="tag">${tag}</span>`).join('')}</div>
+  </article>
+`).join('');
+
+// Render criminal psychology section
+const psychologyGridEl=document.getElementById('psychology-grid');
+const lensGridEl=document.getElementById('lens-grid');
+const focusStripEl=document.getElementById('focus-strip');
+psychologyGridEl.innerHTML=PSYCH_FILES.map((b,i)=>`
+  <article class="study-card reveal" style="transition-delay:${i*.03}s">
+    <div class="archive-kicker">// Study ${String(i+1).padStart(2,'0')}</div>
+    <div class="archive-title">${b.title}</div>
+    <p class="archive-copy">${b.desc}</p>
+    <div class="tag-row">${b.tags.map(tag=>`<span class="tag">${tag}</span>`).join('')}</div>
+  </article>
+`).join('');
+lensGridEl.innerHTML=PSYCH_LENSES.map((l,i)=>`
+  <div class="lens-card reveal" style="transition-delay:${i*.04}s">
+    <div class="archive-title" style="font-size:.82rem">${l.title}</div>
+    <p class="archive-copy" style="font-size:.84rem;margin-top:.45rem">${l.desc}</p>
+  </div>
+`).join('');
+focusStripEl.innerHTML=PSYCH_FOCUS.map(item=>`<span class="tag">${item}</span>`).join('');
+
+// Render game library section
+const gamesMetaEl=document.getElementById('games-meta');
+const gameFiltersEl=document.getElementById('game-filters');
+const gameGridEl=document.getElementById('game-grid');
+const gameSearchEl=document.getElementById('game-search');
+const gameGenres=['All', ...new Set(GAMES.map(g=>g.genre))].sort((a,b)=>a==='All'?-1:b==='All'?1:a.localeCompare(b));
+let activeGenre='All';
+let gameQuery='';
+
+function renderGameFilters(){
+  gameFiltersEl.innerHTML=gameGenres.map(genre=>`<button class="cases-btn game-filter-btn${genre===activeGenre?' active':''}" data-genre="${genre}">${genre}</button>`).join('');
+}
+
+function renderGames(){
+  const filtered=GAMES.filter(g=>{
+    const matchesGenre = activeGenre==='All' || g.genre===activeGenre;
+    const q = gameQuery.trim().toLowerCase();
+    const hay = `${g.title} ${g.genre} ${g.note}`.toLowerCase();
+    const matchesQuery = !q || hay.includes(q);
+    return matchesGenre && matchesQuery;
+  });
+
+  gamesMetaEl.textContent=`${filtered.length} visible / ${GAMES.length} total games`;
+  gameGridEl.innerHTML=filtered.length ? filtered.map((g,i)=>`
+    <article class="study-card reveal" style="transition-delay:${(i%8)*.02}s">
+      <div class="archive-kicker">// ${g.genre}</div>
+      <div class="archive-title">${g.title}</div>
+      <p class="archive-copy">${g.note}</p>
+    </article>
+  `).join('') : `<div class="study-card reveal"><div class="archive-title">No matches</div><p class="archive-copy">Try a different search or genre filter.</p></div>`;
+  doReveal();
+}
+
+renderGameFilters();
+renderGames();
+gameFiltersEl.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-genre]');
+  if(!btn) return;
+  activeGenre=btn.dataset.genre;
+  renderGameFilters();
+  renderGames();
+});
+gameSearchEl.addEventListener('input',e=>{
+  gameQuery=e.target.value || '';
+  renderGames();
+});
+
+// Project card click — opens modal
+document.getElementById('proj-grid').addEventListener('click',function(e){
+  if(e.target.tagName==='A') return;
+  const card=e.target.closest('.proj-card');
+  if(card) openModal(parseInt(card.dataset.idx));
+});
+
+// Reveal on scroll
+function doReveal(){
+  document.querySelectorAll('.reveal:not(.vis)').forEach(el=>{
+    if(el.getBoundingClientRect().top<window.innerHeight-60){
+      el.classList.add('vis');
+      const bar=el.querySelector('.hob-fill');
+      if(bar) setTimeout(()=>bar.style.width=bar.dataset.w+'%',200);
+    }
+  });
+}
+window.addEventListener('scroll',doReveal,{passive:true});
+setTimeout(doReveal,150);
+
+// Progress bar
+window.addEventListener('scroll',()=>{
+  const pct=window.pageYOffset/(document.documentElement.scrollHeight-window.innerHeight)*100;
+  document.getElementById('prog').style.width=pct+'%';
+},{passive:true});
+
+// Typing
+const LINES=["Initializing VIDHAAN.OS...", "Loading: [reason · systems · psychology · control]", "\"The unexamined life is not worth living.\" — Socrates", "\"I know that I know nothing.\" — Socrates", "\"No man ever steps in the same river twice.\" — Heraclitus", "\"Character is fate.\" — Heraclitus", "\"The beginning is the most important part of the work.\" — Plato", "\"Opinion is the medium between knowledge and ignorance.\" — Plato", "\"Happiness depends upon ourselves.\" — Aristotle", "\"The whole is greater than the sum of its parts.\" — Aristotle", "\"It is the mark of an educated mind to entertain a thought without accepting it.\" — Aristotle", "\"I am looking for an honest man.\" — Diogenes", "\"You have power over your mind—not outside events.\" — Marcus Aurelius", "\"The impediment to action advances action.\" — Marcus Aurelius", "\"Waste no more time arguing what a good man should be. Be one.\" — Marcus Aurelius", "\"Very little is needed to make a happy life.\" — Marcus Aurelius", "\"We suffer more often in imagination than in reality.\" — Seneca", "\"Difficulties strengthen the mind, as labor does the body.\" — Seneca", "\"While we wait for life, life passes.\" — Seneca", "\"It is not what happens to you, but how you react to it that matters.\" — Epictetus", "\"First say to yourself what you would be; and then do what you have to do.\" — Epictetus", "\"No great thing is created suddenly.\" — Epictetus", "\"Nature does not hurry, yet everything is accomplished.\" — Lao Tzu", "\"He who knows others is wise; he who knows himself is enlightened.\" — Lao Tzu", "\"When I let go of what I am, I become what I might be.\" — Lao Tzu", "\"Real knowledge is to know the extent of one's ignorance.\" — Confucius", "\"It does not matter how slowly you go as long as you do not stop.\" — Confucius", "\"Our greatest glory is not in never falling, but in rising every time we fall.\" — Confucius", "\"The limits of my language mean the limits of my world.\" — Wittgenstein", "\"Whereof one cannot speak, thereof one must be silent.\" — Wittgenstein", "\"Compassion is the basis of morality.\" — Schopenhauer", "\"Mostly it is loss which teaches us about the worth of things.\" — Schopenhauer", "\"He who has a why to live can bear almost any how.\" — Nietzsche", "\"Whoever fights monsters should see to it that in the process he does not become a monster.\" — Nietzsche", "\"He who would learn to fly one day must first learn to stand and walk.\" — Nietzsche", "\"There is always some madness in love. But there is also always some reason in madness.\" — Nietzsche", "\"Life can only be understood backwards; but it must be lived forwards.\" — Kierkegaard", "\"Anxiety is the dizziness of freedom.\" — Kierkegaard", "\"The most common form of despair is not being who you are.\" — Kierkegaard", "\"In the depth of winter, I finally learned that within me there lay an invincible summer.\" — Camus", "\"The struggle itself toward the heights is enough to fill a man's heart.\" — Camus", "\"Should I kill myself, or have a cup of coffee?\" — Camus", "\"Freedom is what you do with what's been done to you.\" — Sartre", "\"Existence precedes essence.\" — Sartre", "\"One is not born, but rather becomes.\" — Simone de Beauvoir", "\"Change your life today.\" — Simone de Beauvoir", "\"The heart has its reasons of which reason knows nothing.\" — Pascal", "\"I think, therefore I am.\" — Descartes", "\"Peace is not an absence of war; it is a virtue.\" — Spinoza", "\"Nothing can bring you peace but yourself.\" — Emerson", "\"Not until we are lost do we begin to understand ourselves.\" — Thoreau", "\"The price of anything is the amount of life you exchange for it.\" — Thoreau"];
+const tEl=document.getElementById('typing');
+let li=0,ci=0,del=false;
+function type(){
+  const cur=LINES[li];
+  if(!del){ci++;tEl.innerHTML=cur.slice(0,ci)+'<span class="blink">\u2588</span>';if(ci===cur.length){del=true;setTimeout(type,2000);return;}}
+  else{ci--;tEl.innerHTML=cur.slice(0,ci)+'<span class="blink">\u2588</span>';if(ci===0){del=false;li=(li+1)%LINES.length;setTimeout(type,400);return;}}
+  setTimeout(type,del?28:52);
+}
+setTimeout(type,1400);
+
+// Modal
+function openModal(i){
+  const p=PROJECTS[i];
+  document.getElementById('m-tag').textContent='// '+p.id;
+  document.getElementById('m-title').textContent=p.title;
+  document.getElementById('m-desc').textContent=p.long;
+  document.getElementById('m-stack').innerHTML=p.stack.map(s=>`<span class="tag tag-v">${s}</span>`).join('');
+  document.getElementById('m-link').style.display='inline-flex';
+  document.getElementById('m-link').href=p.gh;
+  const demoLink=document.getElementById('m-demo-link');
+  if(p.demo){
+    demoLink.style.display='inline-flex';
+    demoLink.href=p.demo;
+  } else {
+    demoLink.style.display='none';
+    demoLink.removeAttribute('href');
+  }
+  document.getElementById('modal-wrap').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.body.classList.add('modal-open');
+}
+function closeModal(){
+  document.getElementById('modal-wrap').classList.remove('open');
+  document.body.style.overflow='';
+  document.body.classList.remove('modal-open');
+}
+document.getElementById('modal-wrap').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('modal-x').addEventListener('click',closeModal);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// Cursor
+let mx=window.innerWidth/2,my=window.innerHeight/2,rx=0,ry=0;
+const curEl=document.getElementById('cur'),ringEl=document.getElementById('cur-ring');
+const finePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+if(finePointer){
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  (function loop(){
+    curEl.style.left=mx+'px';curEl.style.top=my+'px';
+    rx+=(mx-rx)*.14;ry+=(my-ry)*.14;
+    ringEl.style.left=rx+'px';ringEl.style.top=ry+'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button,.proj-card,.hob,.lab-img,.case-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ringEl.style.width='54px';ringEl.style.height='54px';ringEl.style.borderColor='rgba(255,43,214,.7)';});
+    el.addEventListener('mouseleave',()=>{ringEl.style.width='36px';ringEl.style.height='36px';ringEl.style.borderColor='rgba(0,240,255,.5)';});
+  });
+} else {
+  curEl.style.display='none';
+  ringEl.style.display='none';
+}
+
+// Form
+function handleSend(e){
+  e.preventDefault();
+  const btn=document.getElementById('sub-btn');
+  btn.textContent='TRANSMITTING...';
+  btn.style.borderColor='var(--pink)';btn.style.color='var(--pink)';
+  setTimeout(()=>{
+    btn.textContent='\u2713 MESSAGE RECEIVED';
+    btn.style.borderColor='var(--cyan)';btn.style.color='var(--cyan)';btn.style.background='rgba(0,240,255,.06)';
+    e.target.reset();
+  },1500);
+}
+</script>
 </body>
-
-
 </html>

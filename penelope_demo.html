@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Penelope — Behavioral Signal Extractor Demo</title>
+  <style>
+    :root{
+      --bg:#050915;--bg2:#0b1224;--panel:rgba(10,18,36,.78);--panel-2:rgba(14,24,46,.85);
+      --text:#eef4ff;--muted:#9cb0d3;--cyan:#4de9ff;--pink:#ff4db8;--green:#41ff96;--amber:#ffd166;--red:#ff6b88;
+      --line:rgba(108,140,200,.22);--shadow:0 18px 50px rgba(0,0,0,.45);--radius:24px;
+    }
+    *{box-sizing:border-box} html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
+      radial-gradient(circle at 20% 20%, rgba(77,233,255,.10), transparent 28%),
+      radial-gradient(circle at 80% 18%, rgba(255,77,184,.10), transparent 24%),
+      linear-gradient(180deg, #060a14, #091224 45%, #050915 100%);color:var(--text)}
+    .shell{max-width:1240px;margin:0 auto;padding:32px 20px 56px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 18px;border:1px solid var(--line);background:rgba(8,14,28,.56);backdrop-filter:blur(12px);border-radius:20px;box-shadow:var(--shadow);position:sticky;top:12px;z-index:20}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .brand-badge{width:34px;height:34px;border-radius:50%;background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.45), rgba(77,233,255,.18) 30%, rgba(77,233,255,.03) 70%, transparent 75%);border:1px solid rgba(77,233,255,.45);box-shadow:0 0 24px rgba(77,233,255,.18), inset 0 0 18px rgba(77,233,255,.12)}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid var(--line);background:linear-gradient(180deg, rgba(20,33,60,.92), rgba(12,22,42,.92));color:var(--text);padding:11px 14px;border-radius:14px;cursor:pointer;transition:.18s transform,.18s border-color,.18s box-shadow,.18s background;box-shadow:0 10px 24px rgba(0,0,0,.22);font-weight:600}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(77,233,255,.42)}
+    .btn.primary{background:linear-gradient(180deg, rgba(29,52,93,.95), rgba(17,32,59,.96));border-color:rgba(77,233,255,.35);box-shadow:0 10px 28px rgba(77,233,255,.12)}
+    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:24px;margin-top:24px}
+    .card{border:1px solid var(--line);background:var(--panel);backdrop-filter: blur(14px);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-copy{padding:34px}.eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.14em;font-size:.8rem;font-weight:700}
+    h1{font-size:clamp(2.2rem,4vw,4.2rem);line-height:.96;margin:12px 0 14px}
+    .subtitle{font-size:1.06rem;line-height:1.65;color:var(--muted);max-width:60ch}
+    .hero-stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+    .pill{padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);color:#d8e5ff;font-size:.95rem}
+    .visual{position:relative;display:grid;place-items:center;min-height:420px;padding:26px;overflow:hidden;background:radial-gradient(circle at 50% 35%, rgba(77,233,255,.10), transparent 26%),radial-gradient(circle at 50% 65%, rgba(255,77,184,.10), transparent 24%),linear-gradient(180deg, rgba(10,18,36,.8), rgba(5,9,21,.94));}
+    .visual::before,.visual::after{content:"";position:absolute;inset:18px;border:1px solid rgba(77,233,255,.10);border-radius:20px;pointer-events:none}
+    .visual::after{inset:34px;border-color:rgba(255,77,184,.10)}
+    .stack{width:min(460px,88%);display:grid;gap:14px}
+    .layer{padding:16px 18px;border:1px solid var(--line);background:var(--panel-2);border-radius:16px;position:relative}
+    .layer strong{display:block;font-size:1rem;margin-bottom:4px}.layer span{color:var(--muted);font-size:.95rem}
+    .layer:after{content:"";position:absolute;left:50%;bottom:-14px;width:1px;height:14px;background:linear-gradient(to bottom,var(--cyan),transparent)}
+    .layer:last-child:after{display:none}
+    .main-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;margin-top:24px}
+    .section{padding:22px}.section h2{margin:0 0 8px;font-size:1.28rem}.section p{margin:0;color:var(--muted);line-height:1.6}
+    .demo-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+    .demo-btn{text-align:left;padding:14px 14px;border-radius:16px;border:1px solid var(--line);cursor:pointer;background:linear-gradient(180deg, rgba(19,31,58,.96), rgba(11,20,39,.96));color:var(--text)}
+    .demo-btn small{display:block;color:var(--muted);margin-top:5px}
+    textarea{width:100%;margin-top:16px;min-height:140px;padding:14px 16px;border-radius:18px;border:1px solid var(--line);background:rgba(5,10,20,.8);color:var(--text);outline:none;resize:vertical;font:inherit}
+    textarea:focus{border-color:rgba(77,233,255,.45);box-shadow:0 0 0 4px rgba(77,233,255,.08)}
+    .prompt{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .terminal{margin-top:18px;padding:16px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg, rgba(4,9,18,.95), rgba(8,14,28,.98));min-height:280px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+    .line{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;line-height:1.5}.k{color:var(--cyan)} .v{color:#d9f7ff} .ok{color:var(--green)} .pink{color:var(--pink)} .amber{color:var(--amber)} .red{color:var(--red)}
+    .scoreboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+    .metric{padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--panel-2)} .metric-num{font-size:1.5rem;font-weight:800;color:var(--cyan)} .metric-label{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+    .canvas{margin-top:18px;padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)} .row:last-child{border-bottom:none}
+    .badge-sm{padding:6px 10px;border-radius:999px;border:1px solid var(--line);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em} .low{color:var(--green)} .medium{color:var(--amber)} .high,.critical{color:var(--pink)}
+    .highlight-box{margin-top:16px;padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03);line-height:1.9;color:#dde9ff}
+    .hl-threat{background:rgba(255,77,184,.16);border:1px solid rgba(255,77,184,.24);padding:.16rem .35rem;border-radius:8px}
+    .hl-negative{background:rgba(255,209,102,.14);border:1px solid rgba(255,209,102,.22);padding:.16rem .35rem;border-radius:8px}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.chip{padding:8px 10px;border-radius:999px;border:1px solid var(--line);font-size:.88rem;color:#dce9ff}
+    .meta{margin-top:16px;padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03)} .feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+    .feature{padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--panel-2)} .feature h3{margin:0 0 7px;font-size:1rem}.feature p{margin:0;color:var(--muted);font-size:.95rem;line-height:1.55}
+    .footer{margin-top:24px;padding:18px 20px;border:1px solid var(--line);border-radius:22px;background:rgba(8,14,28,.65);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted)}
+    .status-dot{width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;box-shadow:0 0 14px rgba(65,255,150,.55)}
+    .wave{display:flex;gap:4px;align-items:flex-end;height:28px}.bar{width:4px;border-radius:999px;background:linear-gradient(180deg,var(--cyan),var(--pink));animation:bounce 1.1s ease-in-out infinite;opacity:.92}.bar:nth-child(2){animation-delay:.1s}.bar:nth-child(3){animation-delay:.18s}.bar:nth-child(4){animation-delay:.28s}.bar:nth-child(5){animation-delay:.16s}.bar:nth-child(6){animation-delay:.06s}.bar:nth-child(7){animation-delay:.22s}
+    @keyframes bounce{0%,100%{height:6px}50%{height:28px}}
+    @media (max-width: 980px){.hero,.main-grid{grid-template-columns:1fr}.visual{min-height:340px}}
+    @media (max-width: 640px){.demo-controls,.feature-grid,.scoreboard{grid-template-columns:1fr}.topbar{padding:12px}.hero-copy{padding:24px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge"></div>
+        <div>
+          <div style="font-size:1rem">Penelope</div>
+          <div style="font-size:.82rem;color:var(--muted)">Rule-Based Behavioral Signal Extractor</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="resetBtn">Reset Demo</button>
+        <button class="btn primary" id="playSequenceBtn">Play Demo Sequence</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="card hero-copy">
+        <div class="eyebrow">Normalization • Signal Extraction • Scoring • Explainability</div>
+        <h1>Penelope turns raw text<br/>into readable intent.</h1>
+        <p class="subtitle">A deterministic behavioral signal extraction engine that converts messy text into explainable sentiment, threat, and escalation signals. It is designed for moderation, abuse analysis, and analyst-facing triage where traceability matters more than black-box guesses.</p>
+        <div class="hero-stats">
+          <div class="pill">N-gram Matching</div>
+          <div class="pill">Negation Handling</div>
+          <div class="pill">De-obfuscation</div>
+          <div class="pill">Threat Separation</div>
+          <div class="pill">Session Memory</div>
+          <div class="pill">Explainable Highlights</div>
+        </div>
+      </div>
+
+      <div class="card visual">
+        <div class="stack">
+          <div class="layer"><strong>Normalization</strong><span>Lowercases, cleans whitespace, and repairs noisy spellings like h@te → hate.</span></div>
+          <div class="layer"><strong>Signal Extraction</strong><span>Evaluates unigrams, bigrams, threat phrases, urgency markers, and negation windows.</span></div>
+          <div class="layer"><strong>Scoring + Classification</strong><span>Separates sentiment from threat and maps escalation into low, medium, high, or critical.</span></div>
+          <div class="layer"><strong>Analyst View</strong><span>Surfaces triggers, explanations, and highlighted text for human review.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <div class="card section">
+        <h2>Interactive demo</h2>
+        <p>This browser demo simulates Penelope’s deterministic pipeline. It does not call your backend; instead it demonstrates the same kind of rule-driven analysis and explainability your real project is built around.</p>
+
+        <div class="demo-controls">
+          <button class="demo-btn" data-sample="I hate you and I will find you tonight.">Direct threat<small>Threat phrase + negativity + urgency</small></button>
+          <button class="demo-btn" data-sample="This is not bad, but the rollout is urgent.">Negation handling<small>Flips sentiment inside a local window</small></button>
+          <button class="demo-btn" data-sample="You are all idiots and this terrible idea should be canceled now.">Harassment burst<small>Negative language without explicit violent threat</small></button>
+          <button class="demo-btn" data-sample="I h@te this plan and we need to attack the server now.">Obfuscated hostile input<small>De-obfuscation + threat escalation</small></button>
+        </div>
+
+        <textarea id="inputText" placeholder='Try: "I hate you and I will find you tonight."'></textarea>
+        <div class="prompt">
+          <button class="btn primary" id="analyzeBtn">Analyze Text</button>
+          <button class="btn" id="loadSafeBtn">Load Safe Sample</button>
+        </div>
+
+        <div class="terminal" id="terminal"></div>
+      </div>
+
+      <div class="card section">
+        <h2>Analysis snapshot</h2>
+        <p>Penelope’s value is not only the score — it is why the score happened. The right side mirrors the analyst console approach: scores, structured reasons, and highlighted spans.</p>
+
+        <div class="scoreboard">
+          <div class="metric"><div class="metric-num" id="sentimentScore">0</div><div class="metric-label">Sentiment</div></div>
+          <div class="metric"><div class="metric-num" id="threatScore">0</div><div class="metric-label">Threat</div></div>
+          <div class="metric"><div class="metric-num" id="severityScore">LOW</div><div class="metric-label">Severity</div></div>
+        </div>
+
+        <div class="canvas">
+          <div class="row"><div>Normalized text</div><div id="normalizedBadge" class="badge-sm">ready</div></div>
+          <div class="row"><div>Detected intent</div><div id="intentBadge" class="badge-sm low">benign</div></div>
+          <div class="row"><div>Escalation level</div><div id="escalationBadge" class="badge-sm low">low</div></div>
+          <div class="row"><div>Session memory</div><div id="memoryBadge" class="badge-sm">0 prior alerts</div></div>
+        </div>
+
+        <div class="highlight-box" id="highlightedText">Run an analysis to see highlighted triggers.</div>
+
+        <div class="meta">
+          <strong>Why this is strong</strong>
+          <div class="feature-grid">
+            <div class="feature"><h3>Deterministic</h3><p>No black-box guesses. Every outcome is produced by explicit rules and visible signals.</p></div>
+            <div class="feature"><h3>Explainable</h3><p>Highlights and trigger lists make moderation and security review easier to trust.</p></div>
+            <div class="feature"><h3>Adversarial Aware</h3><p>Normalization and de-obfuscation reduce easy bypasses like h@te or cance1.</p></div>
+            <div class="feature"><h3>Portfolio Ready</h3><p>Full-stack architecture with frontend console, backend APIs, SQLite history, and typed contracts.</p></div>
+          </div>
+        </div>
+
+        <div class="meta">
+          <strong>Signal log</strong>
+          <div class="chips" id="signalChips"><span class="chip">Waiting for input</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div><strong style="color:var(--text)">Best showcase format:</strong> interactive demo + system diagram + short video walkthrough</div>
+      <div class="wave" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    </div>
+  </div>
+
+  <script>
+    const terminal = document.getElementById('terminal');
+    const input = document.getElementById('inputText');
+    const priorAlerts = { count: 0 };
+
+    const negativeWords = new Set(['hate','terrible','idiot','idiots','awful','bad','stupid','useless','cancel']);
+    const urgencyWords = new Set(['urgent','now','tonight','immediately']);
+    const threatWords = new Set(['attack','kill','destroy','find']);
+    const threatPhrases = ['find you','kill you','attack the server'];
+    const negations = new Set(['not','never','no']);
+    const deobfuscationMap = { '@':'a', '1':'l', '0':'o', '$':'s', '!':'i' };
+
+    function addLine(html){
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.innerHTML = html;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function clearTerminal(){
+      terminal.innerHTML = '';
+      addLine('<span class="k">Penelope</span> <span class="pink">demo initialized</span>');
+      addLine('<span class="k">mode</span>: <span class="ok">deterministic signal extraction</span>');
+      addLine('<span class="k">tip</span>: load a sample or write your own text.');
+    }
+
+    function normalize(text){
+      const fixed = text.toLowerCase().split('').map(ch => deobfuscationMap[ch] || ch).join('');
+      return fixed.replace(/\s+/g,' ').trim();
+    }
+
+    function tokenize(text){
+      return text.match(/[a-z']+/g) || [];
+    }
+
+    function getNgrams(tokens){
+      const grams = [...tokens];
+      for(let i=0;i<tokens.length-1;i++) grams.push(tokens[i] + ' ' + tokens[i+1]);
+      for(let i=0;i<tokens.length-2;i++) grams.push(tokens[i] + ' ' + tokens[i+1] + ' ' + tokens[i+2]);
+      return grams;
+    }
+
+    function escaped(text){
+      return text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function analyze(text){
+      const normalized = normalize(text);
+      const tokens = tokenize(normalized);
+      const ngrams = getNgrams(tokens);
+      let sentiment = 0;
+      let threat = 0;
+      let urgency = 0;
+      const triggers = [];
+      const explanations = [];
+      const highlightThreat = new Set();
+      const highlightNegative = new Set();
+
+      tokens.forEach((token, idx) => {
+        const windowStart = Math.max(0, idx - 3);
+        const prior = tokens.slice(windowStart, idx);
+        const negated = prior.some(t => negations.has(t));
+
+        if(negativeWords.has(token)){
+          if(negated){
+            sentiment += 1;
+            explanations.push(`Negation window softened “${token}”.`);
+          } else {
+            sentiment -= 2;
+            highlightNegative.add(token);
+            triggers.push(`negative:${token}`);
+          }
+        }
+
+        if(threatWords.has(token)){
+          threat += 3;
+          highlightThreat.add(token);
+          triggers.push(`threat:${token}`);
+        }
+
+        if(urgencyWords.has(token)){
+          urgency += 1;
+          triggers.push(`urgency:${token}`);
+        }
+      });
+
+      threatPhrases.forEach(phrase => {
+        if(normalized.includes(phrase)){
+          threat += 4;
+          highlightThreat.add(phrase);
+          triggers.push(`phrase:${phrase}`);
+        }
+      });
+
+      if(threat > 0 && urgency > 0){
+        threat += 1;
+        explanations.push('Urgency combined with threat increased escalation.');
+      }
+      if(priorAlerts.count > 0 && threat > 0){
+        threat += 1;
+        explanations.push('Session memory raised threat based on prior hostile activity.');
+      }
+      if(!explanations.length) explanations.push('No hostile combination detected beyond baseline scoring.');
+
+      let severity = 'low';
+      if(threat >= 8) severity = 'critical';
+      else if(threat >= 6) severity = 'high';
+      else if(threat >= 3 || sentiment <= -3) severity = 'medium';
+
+      let intent = 'benign';
+      if(threat >= 6) intent = 'threat';
+      else if(sentiment <= -2) intent = 'hostile';
+      else if(urgency > 0) intent = 'urgent';
+
+      if(threat >= 3) priorAlerts.count += 1;
+
+      return { normalized, tokens, sentiment, threat, severity, intent, triggers, explanations, highlightThreat, highlightNegative };
+    }
+
+    function renderHighlights(result){
+      let html = escaped(result.normalized);
+      [...result.highlightThreat].sort((a,b)=>b.length-a.length).forEach(token => {
+        const safe = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        html = html.replace(new RegExp(`\\b${safe}\\b`, 'gi'), `<span class="hl-threat">$&</span>`);
+        html = html.replace(new RegExp(safe, 'gi'), `<span class="hl-threat">$&</span>`);
+      });
+      [...result.highlightNegative].sort((a,b)=>b.length-a.length).forEach(token => {
+        const safe = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        html = html.replace(new RegExp(`\\b${safe}\\b`, 'gi'), `<span class="hl-negative">$&</span>`);
+      });
+      document.getElementById('highlightedText').innerHTML = html;
+    }
+
+    function renderResult(result){
+      document.getElementById('sentimentScore').textContent = result.sentiment;
+      document.getElementById('threatScore').textContent = result.threat;
+      document.getElementById('severityScore').textContent = result.severity.toUpperCase();
+      document.getElementById('normalizedBadge').textContent = result.normalized.slice(0, 18) + (result.normalized.length > 18 ? '…' : '');
+      document.getElementById('intentBadge').textContent = result.intent;
+      document.getElementById('intentBadge').className = 'badge-sm ' + (result.threat >= 6 ? 'critical' : result.sentiment <= -2 ? 'medium' : 'low');
+      document.getElementById('escalationBadge').textContent = result.severity;
+      document.getElementById('escalationBadge').className = 'badge-sm ' + result.severity;
+      document.getElementById('memoryBadge').textContent = priorAlerts.count + ' prior alerts';
+      renderHighlights(result);
+      document.getElementById('signalChips').innerHTML = result.triggers.length
+        ? result.triggers.map(t => `<span class="chip">${escaped(t)}</span>`).join('')
+        : '<span class="chip">No strong triggers</span>';
+
+      addLine('<span class="k">input</span>: <span class="v">' + escaped(input.value.trim()) + '</span>');
+      addLine('<span class="k">normalized</span>: <span class="v">' + escaped(result.normalized) + '</span>');
+      addLine('<span class="k">sentiment</span>: <span class="amber">' + result.sentiment + '</span>');
+      addLine('<span class="k">threat</span>: <span class="red">' + result.threat + '</span>');
+      addLine('<span class="k">severity</span>: <span class="pink">' + result.severity + '</span>');
+      result.explanations.forEach(ex => addLine('<span class="ok">explain</span>: ' + escaped(ex)));
+    }
+
+    function runAnalysis(){
+      const text = input.value.trim();
+      if(!text) return;
+      const result = analyze(text);
+      renderResult(result);
+    }
+
+    document.querySelectorAll('.demo-btn').forEach(btn => btn.addEventListener('click', () => {
+      input.value = btn.dataset.sample;
+      runAnalysis();
+    }));
+    document.getElementById('analyzeBtn').addEventListener('click', runAnalysis);
+    document.getElementById('loadSafeBtn').addEventListener('click', () => {
+      input.value = 'This is not bad, the release notes look good and the update can wait until tomorrow.';
+      runAnalysis();
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      priorAlerts.count = 0;
+      input.value = '';
+      document.getElementById('sentimentScore').textContent = '0';
+      document.getElementById('threatScore').textContent = '0';
+      document.getElementById('severityScore').textContent = 'LOW';
+      document.getElementById('normalizedBadge').textContent = 'ready';
+      document.getElementById('intentBadge').textContent = 'benign';
+      document.getElementById('intentBadge').className = 'badge-sm low';
+      document.getElementById('escalationBadge').textContent = 'low';
+      document.getElementById('escalationBadge').className = 'badge-sm low';
+      document.getElementById('memoryBadge').textContent = '0 prior alerts';
+      document.getElementById('highlightedText').textContent = 'Run an analysis to see highlighted triggers.';
+      document.getElementById('signalChips').innerHTML = '<span class="chip">Waiting for input</span>';
+      clearTerminal();
+    });
+    document.getElementById('playSequenceBtn').addEventListener('click', () => {
+      const samples = [
+        'This is not bad, but the rollout is urgent.',
+        'You are all idiots and this terrible idea should be canceled now.',
+        'I h@te this plan and we need to attack the server now.'
+      ];
+      let i = 0;
+      const step = () => {
+        if(i >= samples.length) return;
+        input.value = samples[i++];
+        runAnalysis();
+        setTimeout(step, 450);
+      };
+      step();
+    });
+    clearTerminal();
+  </script>
+</body>
+</html>

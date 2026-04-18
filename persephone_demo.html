@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Persephone — Defensive Security Prototype Demo</title>
+<style>
+:root{
+ --bg:#050915;--bg2:#0a1020;--panel:rgba(9,16,32,.82);--panel2:rgba(14,22,42,.9);
+ --text:#eef4ff;--muted:#9cb0d3;--cyan:#4de9ff;--pink:#ff4db8;--green:#41ff96;--amber:#ffd166;
+ --line:rgba(108,140,200,.22);--radius:24px;--shadow:0 18px 50px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box} html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
+radial-gradient(circle at 20% 15%, rgba(77,233,255,.08), transparent 26%),
+radial-gradient(circle at 82% 18%, rgba(255,77,184,.08), transparent 24%),
+linear-gradient(180deg,#060a14,#091224 48%,#050915 100%);color:var(--text)}
+.shell{max-width:1280px;margin:0 auto;padding:32px 20px 56px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 18px;border:1px solid var(--line);background:rgba(8,14,28,.56);backdrop-filter:blur(12px);border-radius:20px;box-shadow:var(--shadow);position:sticky;top:12px;z-index:20}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700}
+.badge{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.45), rgba(77,233,255,.18) 30%, rgba(77,233,255,.03) 70%, transparent 75%);border:1px solid rgba(77,233,255,.45);box-shadow:0 0 24px rgba(77,233,255,.18), inset 0 0 18px rgba(77,233,255,.12)}
+.btn{border:1px solid var(--line);background:linear-gradient(180deg, rgba(20,33,60,.92), rgba(12,22,42,.92));color:var(--text);padding:11px 14px;border-radius:14px;cursor:pointer;transition:.18s transform,.18s border-color,.18s box-shadow;font-weight:600}
+.btn:hover{transform:translateY(-1px);border-color:rgba(77,233,255,.42)}
+.btn.primary{border-color:rgba(77,233,255,.35);box-shadow:0 10px 28px rgba(77,233,255,.10)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;margin-top:24px}
+.card{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(14px);border-radius:var(--radius);box-shadow:var(--shadow)}
+.hero-copy{padding:34px}
+.eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.14em;font-size:.8rem;font-weight:700}
+h1{font-size:clamp(2.2rem,4vw,4rem);line-height:.96;margin:12px 0 14px}
+.subtitle{font-size:1.06rem;line-height:1.65;color:var(--muted);max-width:62ch}
+.pills{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.pill{padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);color:#d8e5ff;font-size:.95rem}
+.visual{position:relative;min-height:420px;padding:26px;overflow:hidden;background:linear-gradient(180deg, rgba(10,18,36,.8), rgba(5,9,21,.94))}
+.visual:before,.visual:after{content:"";position:absolute;inset:18px;border:1px solid rgba(77,233,255,.10);border-radius:20px}
+.visual:after{inset:34px;border-color:rgba(255,77,184,.08)}
+.arch{position:absolute;inset:0;display:grid;place-items:center}
+.stack{width:min(480px,90%);display:grid;gap:14px}
+.layer{padding:16px 18px;border:1px solid var(--line);background:var(--panel2);border-radius:16px;position:relative}
+.layer strong{display:block;font-size:1rem;margin-bottom:4px}
+.layer span{color:var(--muted);font-size:.95rem}
+.layer:after{content:"";position:absolute;left:50%;bottom:-14px;width:1px;height:14px;background:linear-gradient(to bottom,var(--cyan),transparent)}
+.layer:last-child:after{display:none}
+.main{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.section{padding:22px}
+.section h2{margin:0 0 8px;font-size:1.25rem}
+.section p{margin:0;color:var(--muted);line-height:1.6}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.demo-btn{text-align:left;padding:14px 14px;border-radius:16px;border:1px solid var(--line);cursor:pointer;background:linear-gradient(180deg, rgba(19,31,58,.96), rgba(11,20,39,.96));color:var(--text)}
+.demo-btn small{display:block;color:var(--muted);margin-top:5px}
+.terminal{margin-top:18px;padding:16px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg, rgba(4,9,18,.95), rgba(8,14,28,.98));min-height:300px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.line{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.94rem;line-height:1.5}
+.k{color:var(--cyan)} .v{color:#d9f7ff} .ok{color:var(--green)} .pink{color:var(--pink)} .amber{color:var(--amber)}
+.scoreboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.metric{padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--panel2)}
+.metric-num{font-size:1.5rem;font-weight:800;color:var(--cyan)}
+.metric-label{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.canvas{margin-top:18px;padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.row:last-child{border-bottom:none}
+.badge-sm{padding:6px 10px;border-radius:999px;border:1px solid var(--line);font-size:.78rem}
+.low{color:var(--green)} .med{color:var(--amber)} .high{color:var(--pink)}
+.meta{margin-top:16px;padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.tag-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.tag{padding:8px 10px;border-radius:999px;border:1px solid var(--line);font-size:.9rem;color:#dce9ff}
+.footer{margin-top:24px;padding:18px 20px;border:1px solid var(--line);border-radius:22px;background:rgba(8,14,28,.65);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted)}
+.status-dot{width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;box-shadow:0 0 14px rgba(65,255,150,.55)}
+@media(max-width:980px){.hero,.main{grid-template-columns:1fr}.visual{min-height:360px}}
+@media(max-width:640px){.controls,.scoreboard{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <div class="badge"></div>
+      <div>
+        <div style="font-size:1rem">Persephone</div>
+        <div style="font-size:.82rem;color:var(--muted)">Deception-Based Defensive Security Prototype</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="resetBtn">Reset Demo</button>
+      <button class="btn primary" id="playBtn">Play Attack Sequence</button>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="card hero-copy">
+      <div class="eyebrow">Gateway • Honeypot • Analytics • Threat Intelligence</div>
+      <h1>Persephone watches<br/>before it reacts.</h1>
+      <p class="subtitle">A proof-of-concept defensive security system that receives HTTP traffic, scores suspicious behavior, diverts hostile sessions into controlled decoys, and turns those sessions into threat intelligence.</p>
+      <div class="pills">
+        <div class="pill">Gateway Routing</div>
+        <div class="pill">9 Detection Rules</div>
+        <div class="pill">Honeypot Isolation</div>
+        <div class="pill">SQLite Event Logging</div>
+        <div class="pill">Threat Analytics</div>
+        <div class="pill">Dashboard Monitoring</div>
+      </div>
+    </div>
+    <div class="card visual">
+      <div class="arch">
+        <div class="stack">
+          <div class="layer"><strong>Gateway</strong><span>Receives and routes all traffic</span></div>
+          <div class="layer"><strong>Decision Engine</strong><span>Risk scores requests using rule-based detection</span></div>
+          <div class="layer"><strong>Protected App / Honeypot</strong><span>Legitimate users pass through, suspicious actors are isolated</span></div>
+          <div class="layer"><strong>Analytics + Dashboard</strong><span>Sessions, alerts, and threat intelligence surface in real time</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="main">
+    <div class="card section">
+      <h2>Interactive demo</h2>
+      <p>This browser demo simulates how Persephone classifies traffic and moves suspicious sessions into a decoy path. It mirrors the actual prototype's gateway, scoring, and dashboard flow without requiring Docker or local services.</p>
+      <div class="controls">
+        <button class="demo-btn" data-scenario="normal">Normal request<small>Routes to protected app</small></button>
+        <button class="demo-btn" data-scenario="admin">Admin path probe<small>Raises risk and diverts to honeypot</small></button>
+        <button class="demo-btn" data-scenario="sqli">SQL injection attempt<small>Triggers a high-risk response</small></button>
+        <button class="demo-btn" data-scenario="bruteforce">Brute-force login<small>Builds a suspicious session over repeated attempts</small></button>
+      </div>
+      <div class="terminal" id="terminal"></div>
+    </div>
+
+    <div class="card section">
+      <h2>Live intelligence snapshot</h2>
+      <p>Persephone's real prototype includes a gateway on port 8000, API on port 8001, protected app on port 8002, honeypot on port 8003, and dashboards on ports 3000/3001. This demo compresses that architecture into a portfolio-safe simulation.</p>
+      <div class="scoreboard">
+        <div class="metric"><div class="metric-num" id="metric-requests">0</div><div class="metric-label">Requests Seen</div></div>
+        <div class="metric"><div class="metric-num" id="metric-alerts">0</div><div class="metric-label">Alerts Raised</div></div>
+        <div class="metric"><div class="metric-num" id="metric-honeypot">0</div><div class="metric-label">Honeypot Routes</div></div>
+      </div>
+
+      <div class="canvas">
+        <div class="row"><div>Current session</div><div id="session-id" class="badge-sm">none</div></div>
+        <div class="row"><div>Threat level</div><div id="threat-level" class="badge-sm low">low</div></div>
+        <div class="row"><div>Routing decision</div><div id="route" class="badge-sm">protected app</div></div>
+        <div class="row"><div>Latest pattern</div><div id="pattern" class="badge-sm">none</div></div>
+      </div>
+
+      <div class="meta">
+        <strong>Architecture highlights</strong>
+        <div class="tag-row">
+          <span class="tag">FastAPI</span>
+          <span class="tag">SQLite</span>
+          <span class="tag">Honeypots</span>
+          <span class="tag">Threat Analytics</span>
+          <span class="tag">Rule Engine</span>
+          <span class="tag">Docker</span>
+        </div>
+      </div>
+
+      <div class="meta">
+        <strong>Portfolio framing</strong>
+        <p style="margin-top:8px;color:var(--muted)">The real system contains 21+ code files, 25+ REST endpoints, 9 detection rules, analytics, dashboards, and Dockerized deployment. For the site, this version focuses on explaining the product experience clearly and memorably.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div><span class="status-dot"></span><strong style="color:var(--text)">Best showcase flow:</strong> normal request → suspicious request → honeypot route → intelligence view</div>
+    <div>Prototype demo based on your uploaded project summaries</div>
+  </div>
+</div>
+
+<script>
+const terminal=document.getElementById('terminal');
+const reqEl=document.getElementById('metric-requests');
+const alertEl=document.getElementById('metric-alerts');
+const honeyEl=document.getElementById('metric-honeypot');
+const sessionEl=document.getElementById('session-id');
+const threatEl=document.getElementById('threat-level');
+const routeEl=document.getElementById('route');
+const patternEl=document.getElementById('pattern');
+
+let state={requests:0,alerts:0,honeypot:0,currentSession:'none',threat:'low',route:'protected app',pattern:'none'};
+
+function addLine(html){
+  const div=document.createElement('div');
+  div.className='line';
+  div.innerHTML=html;
+  terminal.appendChild(div);
+  terminal.scrollTop=terminal.scrollHeight;
+}
+function sync(){
+  reqEl.textContent=state.requests;
+  alertEl.textContent=state.alerts;
+  honeyEl.textContent=state.honeypot;
+  sessionEl.textContent=state.currentSession;
+  threatEl.textContent=state.threat;
+  threatEl.className='badge-sm ' + (state.threat==='low'?'low':state.threat==='medium'?'med':'high');
+  routeEl.textContent=state.route;
+  patternEl.textContent=state.pattern;
+}
+function resetDemo(){
+  state={requests:0,alerts:0,honeypot:0,currentSession:'none',threat:'low',route:'protected app',pattern:'none'};
+  terminal.innerHTML='';
+  addLine('<span class="k">Persephone</span> <span class="pink">prototype initialized</span>');
+  addLine('<span class="k">services</span>: <span class="v">gateway · decision engine · honeypot · analytics</span>');
+  addLine('<span class="k">tip</span>: run a scenario to watch routing and scoring happen.');
+  sync();
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+async function runScenario(type){
+  if(type==='normal'){
+    state.requests++;
+    state.currentSession='sess-normal-001';
+    addLine('<span class="k">request</span>: <span class="v">GET /</span>');
+    await sleep(250);
+    addLine('<span class="k">risk_score</span>: <span class="ok">5</span>');
+    state.route='protected app'; state.threat='low'; state.pattern='none';
+    addLine('<span class="ok">decision: allow → protected application</span>');
+  }
+  if(type==='admin'){
+    state.requests++;
+    state.alerts++;
+    state.honeypot++;
+    state.currentSession='sess-probe-104';
+    addLine('<span class="k">request</span>: <span class="v">GET /admin</span>');
+    await sleep(250);
+    addLine('<span class="k">signals</span>: <span class="amber">admin_path + suspicious_probe</span>');
+    await sleep(200);
+    addLine('<span class="k">risk_score</span>: <span class="amber">55</span>');
+    state.route='honeypot'; state.threat='medium'; state.pattern='admin probe';
+    addLine('<span class="pink">decision: divert_to_honeypot</span>');
+    addLine('<span class="ok">alert: medium severity scanner activity created</span>');
+  }
+  if(type==='sqli'){
+    state.requests++;
+    state.alerts++;
+    state.honeypot++;
+    state.currentSession='sess-sqli-231';
+    addLine('<span class="k">request</span>: <span class="v">GET /?id=1\' OR \'1\'=\'1</span>');
+    await sleep(250);
+    addLine('<span class="k">signals</span>: <span class="amber">sql_injection + suspicious_pattern</span>');
+    await sleep(200);
+    addLine('<span class="k">risk_score</span>: <span class="pink">72</span>');
+    state.route='honeypot'; state.threat='high'; state.pattern='sql injection';
+    addLine('<span class="pink">decision: divert_to_honeypot + raise alert</span>');
+    addLine('<span class="ok">analytics: anomaly score elevated, session marked high-risk</span>');
+  }
+  if(type==='bruteforce'){
+    state.currentSession='sess-login-778';
+    for(let i=1;i<=6;i++){
+      state.requests++;
+      addLine('<span class="k">request</span>: <span class="v">POST /login</span> <span class="amber">attempt '+i+'</span>');
+      await sleep(120);
+    }
+    state.alerts++;
+    state.honeypot++;
+    state.route='honeypot'; state.threat='high'; state.pattern='brute force';
+    addLine('<span class="k">risk_score</span>: <span class="pink">68</span>');
+    addLine('<span class="pink">decision: repeated auth attempts → divert_to_honeypot</span>');
+    addLine('<span class="ok">analytics: brute force pattern detected (5+ in 5 min)</span>');
+  }
+  sync();
+}
+document.querySelectorAll('.demo-btn').forEach(btn=>btn.addEventListener('click',()=>runScenario(btn.dataset.scenario)));
+document.getElementById('resetBtn').addEventListener('click',resetDemo);
+document.getElementById('playBtn').addEventListener('click',async()=>{
+  for(const s of ['normal','admin','sqli','bruteforce']){await runScenario(s); await sleep(320);}
+});
+resetDemo();
+</script>
+</body>
+</html>

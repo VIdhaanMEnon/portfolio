@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sydney — Desktop AI Assistant Demo</title>
+  <style>
+    :root{
+      --bg:#050915;
+      --bg2:#0b1224;
+      --panel:rgba(10,18,36,.78);
+      --panel-2:rgba(14,24,46,.85);
+      --text:#eef4ff;
+      --muted:#9cb0d3;
+      --cyan:#4de9ff;
+      --pink:#ff4db8;
+      --green:#41ff96;
+      --line:rgba(108,140,200,.22);
+      --shadow:0 18px 50px rgba(0,0,0,.45);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:
+      radial-gradient(circle at 20% 20%, rgba(77,233,255,.10), transparent 28%),
+      radial-gradient(circle at 80% 18%, rgba(255,77,184,.10), transparent 24%),
+      linear-gradient(180deg, #060a14, #091224 45%, #050915 100%);
+      color:var(--text);}
+    a{color:inherit}
+    .shell{max-width:1240px;margin:0 auto;padding:32px 20px 56px}
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;gap:16px;
+      padding:14px 18px;border:1px solid var(--line);background:rgba(8,14,28,.56);
+      backdrop-filter: blur(12px);border-radius:20px;box-shadow:var(--shadow);
+      position:sticky;top:12px;z-index:20;
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .brand-badge{
+      width:34px;height:34px;border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.45), rgba(77,233,255,.18) 30%, rgba(77,233,255,.03) 70%, transparent 75%);
+      border:1px solid rgba(77,233,255,.45);
+      box-shadow:0 0 24px rgba(77,233,255,.18), inset 0 0 18px rgba(77,233,255,.12);
+    }
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--line);background:linear-gradient(180deg, rgba(20,33,60,.92), rgba(12,22,42,.92));
+      color:var(--text);padding:11px 14px;border-radius:14px;cursor:pointer;
+      transition:.18s transform,.18s border-color,.18s box-shadow,.18s background;
+      box-shadow:0 10px 24px rgba(0,0,0,.22);
+      font-weight:600;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:rgba(77,233,255,.42)}
+    .btn.primary{
+      background:linear-gradient(180deg, rgba(29,52,93,.95), rgba(17,32,59,.96));
+      border-color:rgba(77,233,255,.35);
+      box-shadow:0 10px 28px rgba(77,233,255,.12);
+    }
+    .hero{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:24px;margin-top:24px;
+    }
+    .card{
+      border:1px solid var(--line);background:var(--panel);backdrop-filter: blur(14px);
+      border-radius:var(--radius);box-shadow:var(--shadow);
+    }
+    .hero-copy{padding:34px}
+    .eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.14em;font-size:.8rem;font-weight:700}
+    h1{font-size:clamp(2.2rem,4vw,4.2rem);line-height:.96;margin:12px 0 14px}
+    .subtitle{font-size:1.06rem;line-height:1.65;color:var(--muted);max-width:60ch}
+    .hero-stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+    .pill{
+      padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);
+      color:#d8e5ff;font-size:.95rem
+    }
+    .orb-wrap{
+      position:relative;display:grid;place-items:center;min-height:420px;padding:26px;overflow:hidden;
+      background:
+       radial-gradient(circle at 50% 40%, rgba(77,233,255,.08), transparent 28%),
+       radial-gradient(circle at 50% 58%, rgba(255,77,184,.08), transparent 30%),
+       linear-gradient(180deg, rgba(10,18,36,.8), rgba(5,9,21,.94));
+    }
+    .hud-lines::before,.hud-lines::after{
+      content:"";position:absolute;inset:18px;border:1px solid rgba(77,233,255,.10);border-radius:20px;pointer-events:none
+    }
+    .hud-lines::after{inset:34px;border-color:rgba(255,77,184,.10)}
+    .orb{
+      width:min(280px,58vw);aspect-ratio:1;border-radius:50%;position:relative;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(77,233,255,.38), rgba(77,233,255,.08) 22%, rgba(6,18,35,.96) 60%, rgba(2,4,10,1) 72%);
+      border:1px solid rgba(77,233,255,.3);
+      box-shadow:
+        0 0 50px rgba(77,233,255,.14),
+        inset 0 0 60px rgba(77,233,255,.12),
+        inset 0 0 90px rgba(255,77,184,.08);
+      animation:pulse 2.6s ease-in-out infinite;
+    }
+    .orb::before,.orb::after{
+      content:"";position:absolute;inset:-18px;border-radius:50%;border:1px solid rgba(77,233,255,.18);
+      animation:spin 12s linear infinite;
+    }
+    .orb::after{
+      inset:-34px;border-color:rgba(255,77,184,.18);border-style:dashed;animation-direction:reverse;animation-duration:16s
+    }
+    .orb-core{
+      position:absolute;inset:34%;border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.55), rgba(77,233,255,.25) 35%, rgba(77,233,255,.02) 68%, transparent 70%);
+      filter:blur(.4px)
+    }
+    .orb-label{
+      position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+      font-size:.94rem;color:#d5e7ff;background:rgba(4,8,18,.55);border:1px solid var(--line);
+      padding:10px 14px;border-radius:999px;backdrop-filter: blur(10px)
+    }
+    .main-grid{
+      display:grid;grid-template-columns:1.05fr .95fr;gap:24px;margin-top:24px;
+    }
+    .section{padding:22px}
+    .section h2{margin:0 0 8px;font-size:1.28rem}
+    .section p{margin:0;color:var(--muted);line-height:1.6}
+    .demo-controls{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px
+    }
+    .demo-btn{
+      text-align:left;padding:14px 14px;border-radius:16px;border:1px solid var(--line);cursor:pointer;
+      background:linear-gradient(180deg, rgba(19,31,58,.96), rgba(11,20,39,.96));color:var(--text)
+    }
+    .demo-btn small{display:block;color:var(--muted);margin-top:5px}
+    .terminal{
+      margin-top:18px;padding:16px;border-radius:18px;border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(4,9,18,.95), rgba(8,14,28,.98));
+      min-height:260px;display:flex;flex-direction:column;gap:10px;overflow:auto
+    }
+    .line{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.94rem;line-height:1.5}
+    .line .k{color:var(--cyan)}
+    .line .v{color:#d9f7ff}
+    .line .ok{color:var(--green)}
+    .line .pink{color:var(--pink)}
+    .prompt{
+      margin-top:14px;display:flex;gap:10px
+    }
+    .prompt input{
+      flex:1;padding:14px 16px;border-radius:16px;border:1px solid var(--line);
+      background:rgba(5,10,20,.8);color:var(--text);outline:none
+    }
+    .prompt input:focus{border-color:rgba(77,233,255,.45);box-shadow:0 0 0 4px rgba(77,233,255,.08)}
+    .feature-grid{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px
+    }
+    .feature{
+      padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--panel-2)
+    }
+    .feature h3{margin:0 0 7px;font-size:1rem}
+    .feature p{margin:0;color:var(--muted);font-size:.95rem;line-height:1.55}
+    .meta{
+      margin-top:16px;padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03)
+    }
+    .tag-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .tag{padding:8px 10px;border-radius:999px;border:1px solid var(--line);font-size:.9rem;color:#dce9ff}
+    .footer{
+      margin-top:24px;padding:18px 20px;border:1px solid var(--line);border-radius:22px;
+      background:rgba(8,14,28,.65);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted)
+    }
+    .status-dot{
+      width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;
+      box-shadow:0 0 14px rgba(65,255,150,.55)
+    }
+    .wave{
+      display:flex;gap:4px;align-items:flex-end;height:28px
+    }
+    .bar{
+      width:4px;border-radius:999px;background:linear-gradient(180deg,var(--cyan),var(--pink));
+      animation:bounce 1.1s ease-in-out infinite;
+      opacity:.92
+    }
+    .bar:nth-child(2){animation-delay:.1s}.bar:nth-child(3){animation-delay:.18s}.bar:nth-child(4){animation-delay:.28s}
+    .bar:nth-child(5){animation-delay:.16s}.bar:nth-child(6){animation-delay:.06s}.bar:nth-child(7){animation-delay:.22s}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    @keyframes bounce{0%,100%{height:6px}50%{height:28px}}
+    @media (max-width: 980px){
+      .hero,.main-grid{grid-template-columns:1fr}
+      .orb-wrap{min-height:340px}
+    }
+    @media (max-width: 640px){
+      .demo-controls,.feature-grid{grid-template-columns:1fr}
+      .topbar{padding:12px}
+      .hero-copy{padding:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge"></div>
+        <div>
+          <div style="font-size:1rem">Sydney</div>
+          <div style="font-size:.82rem;color:var(--muted)">Desktop AI Assistant — Portfolio Demo</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="resetBtn">Reset Demo</button>
+        <button class="btn primary" id="playSequenceBtn">Play Demo Sequence</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="card hero-copy">
+        <div class="eyebrow">Voice • Automation • Memory • UI</div>
+        <h1>Meet Sydney.</h1>
+        <p class="subtitle">
+          A JARVIS-inspired desktop AI assistant designed to understand commands, route tasks, automate workflows,
+          read on-screen context, and manage reminders through a modular local system.
+        </p>
+        <div class="hero-stats">
+          <div class="pill">Speech to Text</div>
+          <div class="pill">Task Routing</div>
+          <div class="pill">Desktop Automation</div>
+          <div class="pill">OCR + Screen Reading</div>
+          <div class="pill">Memory System</div>
+          <div class="pill">Custom UI</div>
+        </div>
+      </div>
+
+      <div class="card orb-wrap hud-lines">
+        <div class="orb" id="orb">
+          <div class="orb-core"></div>
+        </div>
+        <div class="orb-label">
+          <span class="status-dot"></span>
+          <span id="orbState">Listening</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <div class="card section">
+        <h2>Interactive demo</h2>
+        <p>
+          This is a browser showcase of Sydney’s product experience. It simulates how the assistant hears,
+          interprets, and executes commands without needing local installs or OS permissions.
+        </p>
+        <p style="margin-top:10px;color:var(--muted)">
+          In this web demo, browser-safe actions like opening websites and searches will work in a new tab.
+          Local desktop actions remain simulated.
+        </p>
+
+        <div class="demo-controls">
+          <button class="demo-btn" data-cmd="Sydney, open YouTube">
+            Open YouTube
+            <small>Launches a site through the command layer</small>
+          </button>
+          <button class="demo-btn" data-cmd="Sydney, search for boxing tutorials">
+            Search tutorials
+            <small>Routes a query to the search layer</small>
+          </button>
+          <button class="demo-btn" data-cmd="Sydney, read my screen">
+            Read my screen
+            <small>Simulates OCR + contextual reasoning</small>
+          </button>
+          <button class="demo-btn" data-cmd="Sydney, set a reminder for 7 PM to revise physics">
+            Set reminder
+            <small>Creates a memory-backed reminder event</small>
+          </button>
+        </div>
+
+        <div class="prompt">
+          <input id="commandInput" placeholder='Try: "Sydney, open Brave" or "Sydney, what time is it"' />
+          <button class="btn primary" id="runBtn">Run</button>
+        </div>
+
+        <div class="terminal" id="terminal"></div>
+      </div>
+
+      <div class="card section">
+        <h2>Why this demo exists</h2>
+        <p>
+          The real Sydney project runs locally with Python, automation modules, OCR, audio tooling, and system access.
+          For a portfolio site, this simulated version is the cleanest way to communicate the vision instantly.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature">
+            <h3>Voice Command Flow</h3>
+            <p>Speech input, wake word handling, parsing, execution, and spoken feedback through a polished control loop.</p>
+          </div>
+          <div class="feature">
+            <h3>System Automation</h3>
+            <p>App launching, website opening, typing, clicking, media control, and OS-level tasks routed through modules.</p>
+          </div>
+          <div class="feature">
+            <h3>Memory + Context</h3>
+            <p>Short-term and long-term memory support more natural interactions and project continuity.</p>
+          </div>
+          <div class="feature">
+            <h3>Screen Understanding</h3>
+            <p>OCR-assisted screen reading lets the assistant reason about what is visible and respond accordingly.</p>
+          </div>
+        </div>
+
+        <div class="meta">
+          <strong>Stack snapshot</strong>
+          <div class="tag-row">
+            <span class="tag">Python</span>
+            <span class="tag">Whisper</span>
+            <span class="tag">PyQt6</span>
+            <span class="tag">SQLite</span>
+            <span class="tag">OCR</span>
+            <span class="tag">Automation</span>
+            <span class="tag">Task Pipeline</span>
+          </div>
+        </div>
+
+        <div class="meta">
+          <strong>Suggested portfolio framing</strong>
+          <p style="margin-top:8px;color:var(--muted)">
+            Show this interactive preview, then link to a short video demo and your GitHub repository.
+            That gives viewers both instant clarity and technical proof.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div>
+        <strong style="color:var(--text)">Best showcase format:</strong>
+        demo UI + short video + architecture notes
+      </div>
+      <div class="wave" aria-hidden="true">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const terminal = document.getElementById('terminal');
+    const orbState = document.getElementById('orbState');
+    const input = document.getElementById('commandInput');
+
+    const responses = [
+      {
+        match: /open youtube/i,
+        mode: 'command',
+        action: 'open_website',
+        output: () => {
+          window.open('https://www.youtube.com', '_blank', 'noopener,noreferrer');
+          return 'Execution: OK — Opening https://www.youtube.com';
+        }
+      },
+      {
+        match: /open brave/i,
+        mode: 'command',
+        action: 'open_browser_sim',
+        output: () => {
+          window.open('https://www.google.com', '_blank', 'noopener,noreferrer');
+          return 'Execution: OK — Browser launch simulated in web demo';
+        }
+      },
+      {
+        match: /what time is it/i,
+        mode: 'command',
+        action: 'tell_time',
+        output: () => `Execution: OK — The time is ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`
+      },
+      {
+        match: /search for (.+)/i,
+        mode: 'search',
+        action: 'web_search',
+        output: (command) => {
+          const q = command.match(/search for (.+)/i)?.[1]?.trim() || 'AI tutorials';
+          const url = 'https://www.google.com/search?q=' + encodeURIComponent(q);
+          window.open(url, '_blank', 'noopener,noreferrer');
+          return `Search result: Opening search for "${q}"`;
+        }
+      },
+      {
+        match: /search/i,
+        mode: 'search',
+        action: 'web_search',
+        output: () => 'Search result: Found relevant tutorial results and summarized them for the user.'
+      },
+      {
+        match: /read my screen/i,
+        mode: 'screen',
+        action: 'ocr_read',
+        output: 'Screen analysis: I can see a browser page with a search bar, media suggestions, and navigation controls.'
+      },
+      {
+        match: /reminder/i,
+        mode: 'reminder',
+        action: 'set_reminder',
+        output: 'Reminder created: “Revise physics” scheduled for 7:00 PM.'
+      },
+    ];
+
+    function addLine(html){
+      const div = document.createElement('div');
+      div.className = 'line';
+      div.innerHTML = html;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function clearTerminal(){
+      terminal.innerHTML = '';
+      addLine('<span class="k">Sydney</span> <span class="pink">demo initialized</span>');
+      addLine('<span class="k">status</span>: <span class="ok">online</span>');
+      addLine('<span class="k">tip</span>: try a demo button or type your own command.');
+    }
+
+    function setState(text){
+      orbState.textContent = text;
+    }
+
+    function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+    async function runCommand(command){
+      if(!command.trim()) return;
+      addLine('<span class="k">heard</span>: <span class="v">' + escapeHtml(command) + '</span>');
+      setState('Thinking');
+      await sleep(550);
+
+      const found = responses.find(r => r.match.test(command));
+      if(found){
+        addLine('<span class="k">mode</span>: <span class="v">' + found.mode + '</span>');
+        addLine('<span class="k">action</span>: <span class="v">' + found.action + '</span>');
+        await sleep(380);
+        const out = typeof found.output === 'function' ? found.output(command) : found.output;
+        addLine('<span class="ok">' + escapeHtml(out) + '</span>');
+      } else {
+        addLine('<span class="k">mode</span>: <span class="v">chat</span>');
+        await sleep(380);
+        addLine('<span class="ok">Sydney response: I understood the intent conceptually, but this portfolio demo does not execute real local actions.</span>');
+      }
+
+      setState('Listening');
+    }
+
+    function escapeHtml(str){
+      return str.replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
+    }
+
+    document.querySelectorAll('.demo-btn').forEach(btn => {
+      btn.addEventListener('click', () => runCommand(btn.dataset.cmd));
+    });
+
+    document.getElementById('runBtn').addEventListener('click', () => {
+      runCommand(input.value);
+    });
+
+    input.addEventListener('keydown', e => {
+      if(e.key === 'Enter') runCommand(input.value);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', clearTerminal);
+
+    document.getElementById('playSequenceBtn').addEventListener('click', async () => {
+      const cmds = [
+        'Sydney, open YouTube',
+        'Sydney, search for boxing tutorials',
+        'Sydney, read my screen',
+        'Sydney, set a reminder for 7 PM to revise physics'
+      ];
+      for (const cmd of cmds){
+        await runCommand(cmd);
+        await sleep(520);
+      }
+    });
+
+    clearTerminal();
+  </script>
+</body>
+</html>
